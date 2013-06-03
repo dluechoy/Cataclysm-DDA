@@ -33,7 +33,7 @@ profmap profession::load_professions()
     catajson profsRaw("data/raw/professions.json");
 
     unsigned int id = 0;
-    for (profsRaw.set_begin(); profsRaw.has_curr(); profsRaw.next())
+    for(profsRaw.set_begin(); profsRaw.has_curr(); profsRaw.next())
     {
         ++id;
         catajson currProf = profsRaw.curr();
@@ -45,16 +45,16 @@ profmap profession::load_professions()
         profession newProfession(id, ident, name, description, points);
 
         catajson items = currProf.get("items");
-        for (items.set_begin(); items.has_curr(); items.next())
+        for(items.set_begin(); items.has_curr(); items.next())
         {
             newProfession.add_item(items.curr().as_string());
         }
 
         // Addictions are optional
-        if (currProf.has("addictions"))
+        if(currProf.has("addictions"))
         {
             catajson addictions = currProf.get("addictions");
-            for (addictions.set_begin(); addictions.has_curr(); addictions.next())
+            for(addictions.set_begin(); addictions.has_curr(); addictions.next())
             {
                 catajson currAdd = addictions.curr();
                 std::string type_str = currAdd.get("type").as_string();
@@ -73,7 +73,7 @@ profmap profession::load_professions()
 profession* profession::prof(std::string ident)
 {
     profmap::iterator prof = _all_profs.find(ident);
-    if (prof != _all_profs.end())
+    if(prof != _all_profs.end())
     {
         return &(prof->second);
     }

@@ -61,7 +61,7 @@ material_map material_type::load_materials()
     catajson materialsRaw("data/raw/materials.json");
 
     unsigned int id = 0;
-    for (materialsRaw.set_begin(); materialsRaw.has_curr(); materialsRaw.next())
+    for(materialsRaw.set_begin(); materialsRaw.has_curr(); materialsRaw.next())
     {
         ++id;
         catajson currMaterial = materialsRaw.curr();
@@ -86,7 +86,7 @@ material_map material_type::load_materials()
 material_type* material_type::find_material(std::string ident)
 {
     material_map::iterator found = _all_materials.find(ident);
-    if(found != _all_materials.end()){
+    if(found != _all_materials.end()) {
         return &(found->second);
     }
     else
@@ -126,7 +126,7 @@ material_type* material_type::find_material_from_tag(material mat)
     }
 
     material_map::iterator found = _all_materials.find(ident);
-    if(found != _all_materials.end()){
+    if(found != _all_materials.end()) {
         return &(found->second);
     }
     else
@@ -143,7 +143,7 @@ material_type* material_type::base_material()
 
 int material_type::dam_resist(damage_type damtype) const
 {
-    switch (damtype)
+    switch(damtype)
     {
         case BASH:
             return _bash_resist;

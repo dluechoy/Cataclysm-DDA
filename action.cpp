@@ -4,96 +4,96 @@
 
 void game::load_keyboard_settings()
 {
- std::ifstream fin;
- fin.open("data/keymap.txt");
- if (!fin) { // It doesn't exist
-  std::ofstream fout;
-  fout.open("data/keymap.txt");
-  fout << default_keymap_txt();
-  fout.close();
-  fin.open("data/keymap.txt");
- }
- if (!fin) { // Still can't open it--probably bad permissions
-  debugmsg("Can't open data/keymap.txt.  This may be a permissions issue.");
-  return;
- }
- while (!fin.eof()) {
-  std::string id;
-  fin >> id;
-  if (id == "")
-   getline(fin, id); // Empty line, chomp it
-  else if (id[0] != '#') {
-   action_id act = look_up_action(id);
-   if (act == ACTION_NULL)
-    debugmsg("\
+    std::ifstream fin;
+    fin.open("data/keymap.txt");
+    if(!fin) {  // It doesn't exist
+        std::ofstream fout;
+        fout.open("data/keymap.txt");
+        fout << default_keymap_txt();
+        fout.close();
+        fin.open("data/keymap.txt");
+    }
+    if(!fin) {  // Still can't open it--probably bad permissions
+        debugmsg("Can't open data/keymap.txt.  This may be a permissions issue.");
+        return;
+    }
+    while(!fin.eof()) {
+        std::string id;
+        fin >> id;
+        if(id == "")
+            getline(fin, id); // Empty line, chomp it
+        else if(id[0] != '#') {
+            action_id act = look_up_action(id);
+            if(act == ACTION_NULL)
+                debugmsg("\
 Warning!  data/keymap.txt contains an unknown action, \"%s\"\n\
 Fix data/keymap.txt at your next chance!", id.c_str());
-   else {
-    while (!fin.eof()) {
-      char ch;
-      fin >> std::noskipws >> ch >> std::skipws;
-      if (ch == '\n') {
-        break;
-      } else if (ch != ' ' || fin.peek() == '\n') {
-        if (keymap.find(ch) != keymap.end()) {
-          debugmsg("\
+            else {
+                while(!fin.eof()) {
+                    char ch;
+                    fin >> std::noskipws >> ch >> std::skipws;
+                    if(ch == '\n') {
+                        break;
+                    } else if(ch != ' ' || fin.peek() == '\n') {
+                        if(keymap.find(ch) != keymap.end()) {
+                            debugmsg("\
 Warning!  '%c' assigned twice in the keymap!\n\
 %s is being ignored.\n\
 Fix data/keymap.txt at your next chance!", ch, id.c_str());
+                        } else {
+                            keymap[ ch ] = act;
+                        }
+                    }
+                }
+            }
         } else {
-          keymap[ ch ] = act;
+            getline(fin, id); // Clear the whole line
         }
-      }
     }
-   }
-  } else {
-   getline(fin, id); // Clear the whole line
-  }
- }
 }
 
 void game::save_keymap()
 {
- std::ofstream fout;
- fout.open("data/keymap.txt");
- if (!fout) { // It doesn't exist
-  debugmsg("Can't open data/keymap.txt.");
-  fout.close();
-  return;
- }
- std::map<char, action_id>::iterator it;
- for (it = keymap.begin(); it != keymap.end(); it++)
-  fout << action_ident( (*it).second ) << " " << (*it).first << std::endl;
+    std::ofstream fout;
+    fout.open("data/keymap.txt");
+    if(!fout) {  // It doesn't exist
+        debugmsg("Can't open data/keymap.txt.");
+        fout.close();
+        return;
+    }
+    std::map<char, action_id>::iterator it;
+    for(it = keymap.begin(); it != keymap.end(); it++)
+        fout << action_ident((*it).second) << " " << (*it).first << std::endl;
 
- fout.close();
+    fout.close();
 }
 
 std::vector<char> game::keys_bound_to(action_id act)
 {
- std::vector<char> ret;
- std::map<char, action_id>::iterator it;
- for (it = keymap.begin(); it != keymap.end(); it++) {
-  if ( (*it).second == act )
-   ret.push_back( (*it).first );
- }
+    std::vector<char> ret;
+    std::map<char, action_id>::iterator it;
+    for(it = keymap.begin(); it != keymap.end(); it++) {
+        if((*it).second == act)
+            ret.push_back((*it).first);
+    }
 
- return ret;
+    return ret;
 }
 
 void game::clear_bindings(action_id act)
 {
- std::map<char, action_id>::iterator it;
- for (it = keymap.begin(); it != keymap.end(); it++) {
-  if ( (*it).second == act ) {
-   keymap.erase(it);
-   it = keymap.begin();
-  }
- }
+    std::map<char, action_id>::iterator it;
+    for(it = keymap.begin(); it != keymap.end(); it++) {
+        if((*it).second == act) {
+            keymap.erase(it);
+            it = keymap.begin();
+        }
+    }
 }
 
 std::string action_ident(action_id act)
 {
-    switch (act) {
+    switch(act) {
         case ACTION_PAUSE:
             return "pause";
         case ACTION_MOVE_N:
@@ -197,7 +197,7 @@ std::string action_ident(action_id act)
         case ACTION_BIONICS:
             return "bionics";
         case ACTION_SORT_ARMOR:
-            return "sort_armor";            
+            return "sort_armor";
         case ACTION_WAIT:
             return "wait";
         case ACTION_CRAFT:
@@ -246,15 +246,15 @@ std::string action_ident(action_id act)
             return "debug_mode";
         case ACTION_NULL:
             return "null";
-        }
-    return "unknown";
     }
+    return "unknown";
+}
 
 action_id look_up_action(std::string ident)
 {
-    for (int i = 0; i < NUM_ACTIONS; i++)
+    for(int i = 0; i < NUM_ACTIONS; i++)
     {
-        if (action_ident( action_id(i) ) == ident)
+        if(action_ident(action_id(i)) == ident)
         {
             return action_id(i);
         }
@@ -264,7 +264,7 @@ action_id look_up_action(std::string ident)
 
 std::string action_name(action_id act)
 {
-    switch (act)
+    switch(act)
     {
         case ACTION_PAUSE:
             return "Pause";
@@ -369,7 +369,7 @@ std::string action_name(action_id act)
         case ACTION_BIONICS:
             return "View/Activate Bionics";
         case ACTION_SORT_ARMOR:
-            return "Re-layer armour/clothing";             
+            return "Re-layer armour/clothing";
         case ACTION_WAIT:
             return "Wait for Several Minutes";
         case ACTION_CRAFT:

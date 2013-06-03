@@ -25,28 +25,28 @@ std::map<std::string, MonsterGroup> MonsterGroupManager::monsterGroupMap;
 
 void game::init_mongroups() { MonsterGroupManager::LoadJSONGroups(); }
 
-mon_id MonsterGroupManager::GetMonsterFromGroup( std::string group, std::vector <mtype*> *mtypes,
-                                                 int *quantity, int turn )
+mon_id MonsterGroupManager::GetMonsterFromGroup(std::string group, std::vector <mtype*> *mtypes,
+        int *quantity, int turn)
 {
     int roll = rng(1, 1000);
     MonsterGroup g = monsterGroupMap[group];
-    for (FreqDef_iter it = g.monsters.begin(); it != g.monsters.end(); ++it)
+    for(FreqDef_iter it = g.monsters.begin(); it != g.monsters.end(); ++it)
     {
         if((turn == -1 || (turn + 900 >= MINUTES(STARTING_MINUTES) + HOURS((*mtypes)[it->first]->difficulty))) &&
-           (!OPTIONS[OPT_CLASSIC_ZOMBIES] ||
-            (*mtypes)[it->first]->in_category(MC_CLASSIC) ||
-            (*mtypes)[it->first]->in_category(MC_WILDLIFE)))
+                (!OPTIONS[OPT_CLASSIC_ZOMBIES] ||
+                 (*mtypes)[it->first]->in_category(MC_CLASSIC) ||
+                 (*mtypes)[it->first]->in_category(MC_WILDLIFE)))
         {   //Not too hard for us (or we dont care)
             if(it->second.first >= roll)
             {
-                if( quantity) { *quantity -= it->second.second; }
+                if(quantity) { *quantity -= it->second.second; }
                 return it->first;
             }
             else { roll -= it->second.first; }
         }
     }
-    if ((turn + 900 < MINUTES(STARTING_MINUTES) + HOURS((*mtypes)[g.defaultMonster]->difficulty))
-        && (!OPTIONS[OPT_STATIC_SPAWN]))
+    if((turn + 900 < MINUTES(STARTING_MINUTES) + HOURS((*mtypes)[g.defaultMonster]->difficulty))
+            && (!OPTIONS[OPT_STATIC_SPAWN]))
     {
         return mon_null;
     }
@@ -59,7 +59,7 @@ mon_id MonsterGroupManager::GetMonsterFromGroup( std::string group, std::vector 
 bool MonsterGroupManager::IsMonsterInGroup(std::string group, mon_id monster)
 {
     MonsterGroup g = monsterGroupMap[group];
-    for (FreqDef_iter it = g.monsters.begin(); it != g.monsters.end(); ++it)
+    for(FreqDef_iter it = g.monsters.begin(); it != g.monsters.end(); ++it)
     {
         if(it->first == monster) return true;
     }
@@ -68,9 +68,9 @@ bool MonsterGroupManager::IsMonsterInGroup(std::string group, mon_id monster)
 
 std::string MonsterGroupManager::Monster2Group(mon_id monster)
 {
-    for (std::map<std::string, MonsterGroup>::const_iterator it = monsterGroupMap.begin(); it != monsterGroupMap.end(); ++it)
+    for(std::map<std::string, MonsterGroup>::const_iterator it = monsterGroupMap.begin(); it != monsterGroupMap.end(); ++it)
     {
-        if(IsMonsterInGroup(it->first, monster ))
+        if(IsMonsterInGroup(it->first, monster))
         {
             return it->first;
         }
@@ -86,7 +86,7 @@ std::vector<mon_id> MonsterGroupManager::GetMonstersFromGroup(std::string group)
 
     monsters.push_back(g.defaultMonster);
 
-    for (FreqDef_iter it = g.monsters.begin(); it != g.monsters.end(); ++it)
+    for(FreqDef_iter it = g.monsters.begin(); it != g.monsters.end(); ++it)
     {
         monsters.push_back(it->first);
     }
@@ -131,7 +131,7 @@ MonsterGroup GetMGroupFromJSON(picojson::object *jsonobj)
         exit(1);
     }
 
-    for (picojson::array::const_iterator it_mons = jsonarray.begin(); it_mons != jsonarray.end(); ++it_mons)
+    for(picojson::array::const_iterator it_mons = jsonarray.begin(); it_mons != jsonarray.end(); ++it_mons)
     {
         jsonmonster = it_mons->get<picojson::object>();
 // todo: Bannination
@@ -164,7 +164,7 @@ void MonsterGroupManager::LoadJSONGroups()
     }
 
     //check the data
-    if (! groupsRaw.is<picojson::array>()) {
+    if(! groupsRaw.is<picojson::array>()) {
         printf("The monster group file '%s' does not contain the expected JSON data", monGroupFilePath);
         return;
     }
@@ -174,7 +174,7 @@ void MonsterGroupManager::LoadJSONGroups()
     MonsterGroup g;
 
     const picojson::array& groups = groupsRaw.get<picojson::array>();
-    for (picojson::array::const_iterator it_groups = groups.begin(); it_groups != groups.end(); ++it_groups)
+    for(picojson::array::const_iterator it_groups = groups.begin(); it_groups != groups.end(); ++it_groups)
     {
         jsonobj = it_groups->get<picojson::object>();
         g = GetMGroupFromJSON(&jsonobj);

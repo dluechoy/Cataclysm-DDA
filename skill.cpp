@@ -11,72 +11,72 @@
 #include "options.h"
 
 Skill::Skill() {
-  _ident = std::string("null");
+    _ident = std::string("null");
 
-  _name = std::string("nothing");
-  _description = std::string("The zen-most skill there is.");
+    _name = std::string("nothing");
+    _description = std::string("The zen-most skill there is.");
 }
 
 Skill::Skill(size_t id, std::string ident, std::string name, std::string description) {
-  _id = id;
-  _ident = ident;
+    _id = id;
+    _ident = ident;
 
-  _name = name;
-  _description = description;
+    _name = name;
+    _description = description;
 }
 
 std::vector<Skill*> Skill::skills;
 
 std::vector<Skill*> Skill::loadSkills() {
-  std::vector<Skill*> allSkills;
+    std::vector<Skill*> allSkills;
 
-  picojson::value skillsRaw;
+    picojson::value skillsRaw;
 
-  std::ifstream skillsFile;
+    std::ifstream skillsFile;
 
-  skillsFile.open("data/raw/skills.json");
+    skillsFile.open("data/raw/skills.json");
 
-  skillsFile >> skillsRaw;
+    skillsFile >> skillsRaw;
 
-  if (skillsRaw.is<picojson::array>()) {
-    const picojson::array& skills = skillsRaw.get<picojson::array>();
-    for (picojson::array::const_iterator aSkill = skills.begin(); aSkill != skills.end(); ++aSkill) {
-      const picojson::array& fields = aSkill->get<picojson::array>();
-      picojson::array::const_iterator aField = fields.begin();
+    if(skillsRaw.is<picojson::array>()) {
+        const picojson::array& skills = skillsRaw.get<picojson::array>();
+        for(picojson::array::const_iterator aSkill = skills.begin(); aSkill != skills.end(); ++aSkill) {
+            const picojson::array& fields = aSkill->get<picojson::array>();
+            picojson::array::const_iterator aField = fields.begin();
 
-      std::string ident, name, description;
+            std::string ident, name, description;
 
-      ident = aField++->get<std::string>();
-      name = aField++->get<std::string>();
-      description = aField++->get<std::string>();
+            ident = aField++->get<std::string>();
+            name = aField++->get<std::string>();
+            description = aField++->get<std::string>();
 
-      Skill *newSkill = new Skill(allSkills.size(), ident, name, description);
-      allSkills.push_back(newSkill);
+            Skill *newSkill = new Skill(allSkills.size(), ident, name, description);
+            allSkills.push_back(newSkill);
+        }
+    } else {
+        std::cout << skillsRaw << std::endl;
+        exit(1);
     }
-  } else {
-    std::cout << skillsRaw << std::endl;
-    exit(1);
-  }
 
-  return allSkills;
+    return allSkills;
 }
 
 Skill* Skill::skill(std::string ident) {
- for (std::vector<Skill*>::iterator aSkill = Skill::skills.begin();
-      aSkill != Skill::skills.end(); ++aSkill) {
-  if ((*aSkill)->_ident == ident) {
-   return *aSkill;
-  }
- }
- return NULL;
+    for(std::vector<Skill*>::iterator aSkill = Skill::skills.begin();
+            aSkill != Skill::skills.end(); ++aSkill) {
+        if((*aSkill)->_ident == ident) {
+            return *aSkill;
+        }
+    }
+    return NULL;
 }
 
 Skill* Skill::skill(size_t id) {
-  return Skill::skills[id];
+    return Skill::skills[id];
 }
 
 size_t Skill::skill_count() {
-  return Skill::skills.size();
+    return Skill::skills.size();
 }
 
 
@@ -112,12 +112,12 @@ SkillLevel::SkillLevel(int minLevel, int maxLevel, int minExercise, int maxExerc
 }
 
 void SkillLevel::train(int amount) {
-  _exercise += amount;
+    _exercise += amount;
 
-  if (_exercise >= 100 * (_level + 1)) {
-    _exercise = 0;
-    ++_level;
-  }
+    if(_exercise >= 100 * (_level + 1)) {
+        _exercise = 0;
+        ++_level;
+    }
 }
 
 static int rustRate(int level)
@@ -133,19 +133,19 @@ bool SkillLevel::isRusting(const calendar& turn) const
 
 bool SkillLevel::rust(const calendar& turn, bool forgetful, bool charged_bio_mem)
 {
-    if (OPTIONS[OPT_SKILL_RUST] == 2) return false;
+    if(OPTIONS[OPT_SKILL_RUST] == 2) return false;
 
-    if (_level > 0 && turn > _lastPracticed &&
-        (turn - _lastPracticed) % rustRate(_level) == 0)
+    if(_level > 0 && turn > _lastPracticed &&
+            (turn - _lastPracticed) % rustRate(_level) == 0)
     {
-        if (rng(1,12) % (forgetful ? 3 : 4))
+        if(rng(1,12) % (forgetful ? 3 : 4))
         {
-            if (OPTIONS[OPT_SKILL_RUST] == 0 || _exercise > 0)
+            if(OPTIONS[OPT_SKILL_RUST] == 0 || _exercise > 0)
             {
-                if (charged_bio_mem) return one_in(5);
+                if(charged_bio_mem) return one_in(5);
                 _exercise -= _level;
 
-                if (_exercise < 0)
+                if(_exercise < 0)
                 {
                     _exercise = (100 * _level) - 1;
                     --_level;
@@ -166,7 +166,7 @@ void SkillLevel::readBook(int minimumGain, int maximumGain, const calendar &turn
 {
     int gain = rng(minimumGain, maximumGain);
 
-    if (_level < maximumLevel)
+    if(_level < maximumLevel)
     {
         train(gain);
     }
@@ -175,52 +175,52 @@ void SkillLevel::readBook(int minimumGain, int maximumGain, const calendar &turn
 
 
 std::istream& operator>>(std::istream& is, SkillLevel& obj) {
-  int level; int exercise; bool isTraining; int lastPracticed;
+    int level; int exercise; bool isTraining; int lastPracticed;
 
-  is >> level >> exercise >> isTraining >> lastPracticed;
+    is >> level >> exercise >> isTraining >> lastPracticed;
 
-  obj = SkillLevel(level, exercise, isTraining, lastPracticed);
+    obj = SkillLevel(level, exercise, isTraining, lastPracticed);
 
-  return is;
+    return is;
 }
 
 std::ostream& operator<<(std::ostream& os, const SkillLevel& obj) {
-  os << obj.level() << " " << obj.exercise(true) << " "
-     << obj.isTraining() << " " << obj.lastPracticed() << " ";
+    os << obj.level() << " " << obj.exercise(true) << " "
+       << obj.isTraining() << " " << obj.lastPracticed() << " ";
 
-  return os;
+    return os;
 }
 
 SkillLevel& SkillLevel::operator= (const SkillLevel &rhs)
 {
- if (this == &rhs)
-  return *this; // No self-assignment
+    if(this == &rhs)
+        return *this; // No self-assignment
 
-  _level = rhs._level;
-  _exercise = rhs._exercise;
-  _isTraining = rhs._isTraining;
-  _lastPracticed = rhs._lastPracticed;
+    _level = rhs._level;
+    _exercise = rhs._exercise;
+    _isTraining = rhs._isTraining;
+    _lastPracticed = rhs._lastPracticed;
 
- return *this;
+    return *this;
 }
 
 std::string skill_name(int sk) {
-  return Skill::skill(sk)->name();
+    return Skill::skill(sk)->name();
 }
 
 std::string skill_description(int sk) {
-  return Skill::skill(sk)->description();
+    return Skill::skill(sk)->description();
 }
 
 double price_adjustment(int barter_skill) {
- switch (barter_skill) {
-  case 0:  return 1.5;
-  case 1:  return 1.4;
-  case 2:  return 1.2;
-  case 3:  return 1.0;
-  case 4:  return 0.8;
-  case 5:  return 0.6;
-  case 6:  return 0.5;
-  default: return 0.3 + 1.0 / barter_skill;
- }
+    switch(barter_skill) {
+        case 0:  return 1.5;
+        case 1:  return 1.4;
+        case 2:  return 1.2;
+        case 3:  return 1.0;
+        case 4:  return 0.8;
+        case 5:  return 0.6;
+        case 6:  return 0.5;
+        default: return 0.3 + 1.0 / barter_skill;
+    }
 }
