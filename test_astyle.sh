@@ -33,6 +33,17 @@ ASTYLE_PARAMETERS=" \
     --suffix=none"
 FILES=`ls --color=never > Tools/AStyle/files.txt`
 #because --exclude doesn't work on Mac
-sed -e '/mapgen\.cpp/d' Tools/AStyle/files.txt > Tools/AStyle/filed.txt
-FILES_CPP=`sed -n -e '/^.*\\.cpp\$/p' Tools/AStyle/filed.txt`
+#because ( | | ) doesn't work on Win
+sed -e '/^artifact\.cpp/d' Tools/AStyle/files.txt > Tools/AStyle/filed.txt
+sed -e '/^disease\.cpp/d' Tools/AStyle/filed.txt > Tools/AStyle/filer.txt
+sed -e '/^game\.cpp/d' Tools/AStyle/filer.txt > Tools/AStyle/filed.txt
+sed -e '/^iexamine\.cpp/d' Tools/AStyle/filed.txt > Tools/AStyle/filer.txt
+sed -e '/^inventory_ui\.cpp/d' Tools/AStyle/filer.txt > Tools/AStyle/filed.txt
+sed -e '/^iuse\.cpp/d' Tools/AStyle/filed.txt > Tools/AStyle/filer.txt
+sed -e '/^map\.cpp/d' Tools/AStyle/filer.txt > Tools/AStyle/filed.txt
+sed -e '/^mapgen\.cpp/d' Tools/AStyle/filed.txt > Tools/AStyle/filer.txt
+sed -e '/^npcmove\.cpp/d' Tools/AStyle/filer.txt > Tools/AStyle/filed.txt
+sed -e '/^vehicle\.cpp/d' Tools/AStyle/filed.txt > Tools/AStyle/filer.txt
+
+FILES_CPP=`sed -n -e '/^.*\\.cpp\$/p' Tools/AStyle/filer.txt`
 $ASTYLE ${ASTYLE_PARAMETERS} $FILES_CPP
