@@ -110,20 +110,22 @@ struct player_activity
  int moves_left;
  int index;
  char invlet;
+ std::string name;
  bool continuous;
  bool ignore_trivial;
  std::vector<int> values;
  point placement;
 
  player_activity() { type = ACT_NULL; moves_left = 0; index = -1; invlet = 0;
-                     placement = point(-1, -1); continuous = false; }
+                     name = ""; placement = point(-1, -1); continuous = false; }
 
- player_activity(activity_type t, int turns, int Index, char ch)
+ player_activity(activity_type t, int turns, int Index, char ch, std::string name_in)
  {
   type = t;
   moves_left = turns;
   index = Index;
   invlet = ch;
+  name = name_in;
   placement = point(-1, -1);
   continuous = false;
   ignore_trivial = false;
@@ -135,6 +137,7 @@ struct player_activity
   moves_left = copy.moves_left;
   index = copy.index;
   invlet = copy.invlet;
+  name = copy.name;
   placement = copy.placement;
   continuous = copy.continuous;
   ignore_trivial = copy.ignore_trivial;
@@ -146,8 +149,9 @@ struct player_activity
  std::string save_info()
  {
   std::stringstream ret;
-  ret << type << " " << moves_left << " " << index << " " << invlet << " " << placement.x <<
-         " " << placement.y << " " << values.size();
+  // name can be empty, so make sure we prepend something to it
+  ret << type << " " << moves_left << " " << index << " " << invlet << " str:" << name << " "
+         << placement.x << " " << placement.y << " " << values.size();
   for (int i = 0; i < values.size(); i++)
    ret << " " << values[i];
 
@@ -157,7 +161,9 @@ struct player_activity
  void load_info(std::stringstream &dump)
  {
   int tmp, tmptype;
-  dump >> tmptype >> moves_left >> index >> invlet >> placement.x >> placement.y >> tmp;
+  std::string tmpname;
+  dump >> tmptype >> moves_left >> index >> invlet >> tmpname >> placement.x >> placement.y >> tmp;
+  name = tmpname.substr(4);
   type = activity_type(tmptype);
   for (int i = 0; i < tmp; i++) {
    int tmp2;
@@ -188,7 +194,7 @@ enum pl_flag {
  PF_GOURMAND,	// Faster eating, higher level of max satiated
  PF_ANIMALEMPATH,// Animals attack less
  PF_TERRIFYING,	// All creatures run away more
- PF_DISRESISTANT,// Less likely to succumb to low health; TODO: Implement this
+ PF_DISRESISTANT,// Less likely to succumb to low health
  PF_ADRENALINE,	// Big bonuses when low on HP
  PF_SELFAWARE, // Let's you see exact HP totals
  PF_INCONSPICUOUS,// Less spawns due to timeouts
