@@ -32,5 +32,7 @@ ASTYLE_PARAMETERS=" \
     --lineend=linux \
     --suffix=none"
 FILES=`ls --color=never > Tools/AStyle/files.txt`
-FILES_CPP=`sed -n -e '/^.*\\.cpp\$/p' Tools/AStyle/files.txt`
+#because --exclude doesn't work on Mac
+sed -e '/mapgen\.cpp/d' Tools/AStyle/files.txt > Tools/AStyle/filed.txt
+FILES_CPP=`sed -n -e '/^.*\\.cpp\$/p' Tools/AStyle/filed.txt`
 $ASTYLE ${ASTYLE_PARAMETERS} $FILES_CPP
