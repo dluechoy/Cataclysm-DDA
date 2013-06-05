@@ -42,7 +42,7 @@ material_type::material_type(unsigned int id, std::string ident, std::string nam
     _dmg_adj[0] = dmg_adj[0];
     _dmg_adj[1] = dmg_adj[1];
     _dmg_adj[2] = dmg_adj[2];
-    _dmg_adj[3] = dmg_adj[3];        
+    _dmg_adj[3] = dmg_adj[3];
     _acid_resist = acid_resist;
     _elec_resist = elec_resist;
     _fire_resist = fire_resist;
@@ -61,7 +61,7 @@ material_type::material_type(std::string ident)
     _dmg_adj[0] = mat_type->dmg_adj(1);
     _dmg_adj[1] = mat_type->dmg_adj(2);
     _dmg_adj[2] = mat_type->dmg_adj(3);
-    _dmg_adj[3] = mat_type->dmg_adj(4); 
+    _dmg_adj[3] = mat_type->dmg_adj(4);
     _acid_resist = mat_type->acid_resist();
     _elec_resist = mat_type->elec_resist();
     _fire_resist = mat_type->fire_resist();
@@ -77,7 +77,7 @@ material_map material_type::load_materials()
     catajson materialsRaw("data/raw/materials.json");
 
     unsigned int id = 0;
-    for (materialsRaw.set_begin(); materialsRaw.has_curr(); materialsRaw.next())
+    for(materialsRaw.set_begin(); materialsRaw.has_curr(); materialsRaw.next())
     {
         ++id;
         catajson currMaterial = materialsRaw.curr();
@@ -110,7 +110,7 @@ material_map material_type::load_materials()
 material_type* material_type::find_material(std::string ident)
 {
     material_map::iterator found = _all_materials.find(ident);
-    if(found != _all_materials.end()){
+    if(found != _all_materials.end()) {
         return &(found->second);
     }
     else
@@ -127,7 +127,7 @@ material_type* material_type::base_material()
 
 int material_type::dam_resist(damage_type damtype) const
 {
-    switch (damtype)
+    switch(damtype)
     {
         case BASH:
             return _bash_resist;
@@ -194,9 +194,9 @@ std::string material_type::dmg_adj(int dam) const
 {
     int tmpdam = dam - 1;
     // bounds check
-    if (tmpdam < 0 || tmpdam >= 4)
+    if(tmpdam < 0 || tmpdam >= 4)
         return "";
-    
+
     return _dmg_adj[tmpdam];
 }
 

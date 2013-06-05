@@ -17,7 +17,7 @@
 Item_factory* item_controller = new Item_factory();
 
 //Every item factory comes with a missing item
-Item_factory::Item_factory(){
+Item_factory::Item_factory() {
     init();
     m_missing_item = new itype();
     m_missing_item->name = "Error: Item Missing.";
@@ -25,7 +25,7 @@ Item_factory::Item_factory(){
     m_templates["MISSING_ITEM"]=m_missing_item;
 }
 
-void Item_factory::init(){
+void Item_factory::init() {
     //Populate the iuse functions
     iuse_function_list["NONE"] = &iuse::none;
     iuse_function_list["SEWAGE"] = &iuse::sewage;
@@ -68,7 +68,7 @@ void Item_factory::init(){
     iuse_function_list["MARLOSS"] = &iuse::marloss;
     iuse_function_list["DOGFOOD"] = &iuse::dogfood;
 
-  // TOOLS
+    // TOOLS
     iuse_function_list["LIGHTER"] = &iuse::lighter;
     iuse_function_list["PRIMITIVE_FIRE"] = &iuse::primitive_fire;
     iuse_function_list["SEW"] = &iuse::sew;
@@ -258,7 +258,7 @@ void Item_factory::init(){
 }
 
 //Will eventually be deprecated - Loads existing item format into the item factory, and vice versa
-void Item_factory::init(game* main_game){
+void Item_factory::init(game* main_game) {
     load_item_templates(); // this one HAS to be called after game is created
     // Make a copy of our items loaded from JSON
     std::map<Item_tag, itype*> new_templates = m_templates;
@@ -268,41 +268,41 @@ void Item_factory::init(game* main_game){
     main_game->itypes.insert(new_templates.begin(), new_templates.end());
     //And add them to the various item lists, as needed.
     for(std::map<Item_tag, itype*>::iterator iter = new_templates.begin(); iter != new_templates.end(); ++iter) {
-      standard_itype_ids.push_back(iter->first);
+        standard_itype_ids.push_back(iter->first);
     }
 }
 
 //Returns the template with the given identification tag
-itype* Item_factory::find_template(const Item_tag id){
+itype* Item_factory::find_template(const Item_tag id) {
     std::map<Item_tag, itype*>::iterator found = m_templates.find(id);
-    if(found != m_templates.end()){
+    if(found != m_templates.end()) {
         return found->second;
     }
-    else{
+    else {
         return m_missing_item;
     }
 }
 
 //Returns a random template from the list of all templates.
-itype* Item_factory::random_template(){
+itype* Item_factory::random_template() {
     return template_from("ALL");
 }
 
 //Returns a random template from those with the given group tag
-itype* Item_factory::template_from(const Item_tag group_tag){
-    return find_template( id_from(group_tag) );
+itype* Item_factory::template_from(const Item_tag group_tag) {
+    return find_template(id_from(group_tag));
 }
 
 //Returns a random template name from the list of all templates.
-const Item_tag Item_factory::random_id(){
+const Item_tag Item_factory::random_id() {
     return id_from("ALL");
 }
 
 //Returns a random template name from the list of all templates.
-const Item_tag Item_factory::id_from(const Item_tag group_tag){
+const Item_tag Item_factory::id_from(const Item_tag group_tag) {
     std::map<Item_tag, Item_group*>::iterator group_iter = m_template_groups.find(group_tag);
     //If the tag isn't found, just return a reference to missing item.
-    if(group_iter != m_template_groups.end()){
+    if(group_iter != m_template_groups.end()) {
         return group_iter->second->get_id();
     } else {
         return "MISSING_ITEM";
@@ -310,30 +310,30 @@ const Item_tag Item_factory::id_from(const Item_tag group_tag){
 }
 
 
-item Item_factory::create(Item_tag id, int created_at){
+item Item_factory::create(Item_tag id, int created_at) {
     return item(find_template(id),0);
 }
-Item_list Item_factory::create(Item_tag id, int created_at, int quantity){
+Item_list Item_factory::create(Item_tag id, int created_at, int quantity) {
     Item_list new_items;
     item new_item_base = create(id, created_at);
-    for(int ii=0;ii<quantity;++ii){
+    for(int ii=0; ii<quantity; ++ii) {
         new_items.push_back(new_item_base.clone());
     }
     return new_items;
 }
-item Item_factory::create_from(Item_tag group, int created_at){
+item Item_factory::create_from(Item_tag group, int created_at) {
     return create(id_from(group), created_at);
 }
-Item_list Item_factory::create_from(Item_tag group, int created_at, int quantity){
+Item_list Item_factory::create_from(Item_tag group, int created_at, int quantity) {
     return create(id_from(group), created_at, quantity);
 }
-item Item_factory::create_random(int created_at){
+item Item_factory::create_random(int created_at) {
     return create(random_id(), created_at);
 }
-Item_list Item_factory::create_random(int created_at, int quantity){
+Item_list Item_factory::create_random(int created_at, int quantity) {
     Item_list new_items;
     item new_item_base = create(random_id(), created_at);
-    for(int ii=0;ii<quantity;++ii){
+    for(int ii=0; ii<quantity; ++ii) {
         new_items.push_back(new_item_base.clone());
     }
     return new_items;
@@ -343,7 +343,7 @@ Item_list Item_factory::create_random(int created_at, int quantity){
 // DATA FILE READING //
 ///////////////////////
 
-void Item_factory::load_item_templates(){
+void Item_factory::load_item_templates() {
     load_item_templates_from("data/raw/items/melee.json");
     load_item_templates_from("data/raw/items/ranged.json");
     load_item_templates_from("data/raw/items/ammo.json");
@@ -356,16 +356,16 @@ void Item_factory::load_item_templates(){
 }
 
 // Load values from this data file into m_templates
-void Item_factory::load_item_templates_from(const std::string file_name){
+void Item_factory::load_item_templates_from(const std::string file_name) {
     catajson all_items(file_name);
 
-    if (! all_items.is_array()) {
+    if(! all_items.is_array()) {
         debugmsg("%s is not an array of item_templates", file_name.c_str());
         exit(2);
     }
 
     //Crawl through and extract the items
-    for (all_items.set_begin(); all_items.has_curr(); all_items.next()) {
+    for(all_items.set_begin(); all_items.has_curr(); all_items.next()) {
         catajson entry = all_items.curr();
         // The one element we absolutely require for an item definition is an id
         if(!entry.has("id") || !entry.get("id").is_string())
@@ -385,14 +385,14 @@ void Item_factory::load_item_templates_from(const std::string file_name){
             else
             {
                 itype* new_item_template;
-                if (!entry.has("type"))
+                if(!entry.has("type"))
                 {
                     new_item_template = new itype();
                 }
                 else
                 {
                     std::string type_label = entry.get("type").as_string();
-                    if (type_label == "GUNMOD")
+                    if(type_label == "GUNMOD")
                     {
                         it_gunmod* gunmod_template = new it_gunmod();
                         gunmod_template->damage = entry.get("damage_modifier").as_int();;
@@ -409,7 +409,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
                         gunmod_template->acceptible_ammo_types = (!entry.has("acceptable_ammo") ? 0 : flags_from_json(entry.get("acceptable_ammo"), "ammo"));
                         new_item_template = gunmod_template;
                     }
-                    else if (type_label == "COMESTIBLE")
+                    else if(type_label == "COMESTIBLE")
                     {
                         it_comest* comest_template = new it_comest();
                         comest_template->comesttype = entry.get("comestible_type").as_string();
@@ -426,7 +426,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
                         comest_template->add = addiction_type(entry.get("addiction_type").as_string());
                         new_item_template = comest_template;
                     }
-                    else if (type_label == "GUN")
+                    else if(type_label == "GUN")
                     {
                         it_gun* gun_template = new it_gun();
                         gun_template->ammo = ammo_from_string(entry.get("ammo").as_string());
@@ -442,7 +442,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
 
                         new_item_template = gun_template;
                     }
-                    else if (type_label == "TOOL")
+                    else if(type_label == "TOOL")
                     {
                         it_tool* tool_template = new it_tool();
                         tool_template->ammo = ammo_from_string(entry.get("ammo").as_string());
@@ -454,7 +454,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
 
                         new_item_template = tool_template;
                     }
-                    else if (type_label == "AMMO")
+                    else if(type_label == "AMMO")
                     {
                         it_ammo* ammo_template = new it_ammo();
                         ammo_template->type =
@@ -474,7 +474,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
 
                         new_item_template = ammo_template;
                     }
-                    else if (type_label == "ARMOR")
+                    else if(type_label == "ARMOR")
                     {
                         it_armor* armor_template = new it_armor();
 
@@ -486,11 +486,11 @@ void Item_factory::load_item_templates_from(const std::string file_name){
                         armor_template->storage = entry.get("storage").as_int();
                         armor_template->power_armor = entry.has("power_armor") ? entry.get("power_armor").as_bool() : false;
                         armor_template->covers = entry.has("covers") ?
-                          flags_from_json(entry.get("covers"),"bodyparts") : 0;
+                                                 flags_from_json(entry.get("covers"),"bodyparts") : 0;
 
                         new_item_template = armor_template;
                     }
-                    else if (type_label == "BOOK")
+                    else if(type_label == "BOOK")
                     {
                         it_book* book_template = new it_book();
 
@@ -520,14 +520,14 @@ void Item_factory::load_item_templates_from(const std::string file_name){
                 new_item_template->sym = entry.get("symbol").as_char();
                 new_item_template->color = color_from_string(entry.get("color").as_string());
                 new_item_template->description = entry.get("description").as_string();
-                if(entry.has("material")){
-                  set_material_from_json(new_id, entry.get("material"));
+                if(entry.has("material")) {
+                    set_material_from_json(new_id, entry.get("material"));
                 } else {
-                  new_item_template->m1 = "null";
-                  new_item_template->m2 = "null";
+                    new_item_template->m1 = "null";
+                    new_item_template->m2 = "null";
                 }
                 Item_tag new_phase = "solid";
-                if(entry.has("phase")){
+                if(entry.has("phase")) {
                     new_phase = entry.get("phase").as_string();
                 }
                 new_item_template->phase = phase_from_tag(new_phase);
@@ -537,7 +537,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
                 new_item_template->melee_cut = entry.get("cutting").as_int();
                 new_item_template->m_to_hit = entry.get("to_hit").as_int();
 
-                if( entry.has("flags") )
+                if(entry.has("flags"))
                 {
                     new_item_template->item_tags = entry.get("flags").as_tags();
                     /*
@@ -560,7 +560,7 @@ void Item_factory::load_item_templates_from(const std::string file_name){
 }
 
 // Load values from this data file into m_template_groups
-void Item_factory::load_item_groups_from(const std::string file_name){
+void Item_factory::load_item_groups_from(const std::string file_name) {
     std::ifstream data_file;
     picojson::value input_value;
 
@@ -570,27 +570,27 @@ void Item_factory::load_item_groups_from(const std::string file_name){
 
     //Handle any obvious errors on file load
     std::string err = picojson::get_last_error();
-    if (! err.empty()) {
+    if(! err.empty()) {
         std::cerr << "In JSON file \"" << file_name << "\"" << data_file << ":" << err << std::endl;
         exit(1);
     }
-    if (! input_value.is<picojson::array>()) {
+    if(! input_value.is<picojson::array>()) {
         std::cerr << file_name << " is not an array of item groups"<< std::endl;
         exit(2);
     }
 
     //Crawl through once and create an entry for every definition
     const picojson::array& all_items = input_value.get<picojson::array>();
-    for (picojson::array::const_iterator entry = all_items.begin(); entry != all_items.end(); ++entry) {
-        if( !(entry->is<picojson::object>()) ){
+    for(picojson::array::const_iterator entry = all_items.begin(); entry != all_items.end(); ++entry) {
+        if(!(entry->is<picojson::object>())) {
             std::cerr << "Invalid group definition, entry not a JSON object" << std::endl;
         }
-        else{
+        else {
             const picojson::value::object& entry_body = entry->get<picojson::object>();
 
             // The one element we absolutely require for an item definition is an id
             picojson::value::object::const_iterator key_pair = entry_body.find("id");
-            if( key_pair == entry_body.end() || !(key_pair->second.is<std::string>()) ){
+            if(key_pair == entry_body.end() || !(key_pair->second.is<std::string>())) {
                 std::cerr << "Group definition skipped, no id found or id was malformed." << std::endl;
             } else {
                 Item_tag group_id = key_pair->second.get<std::string>();
@@ -599,7 +599,7 @@ void Item_factory::load_item_groups_from(const std::string file_name){
         }
     }
     //Once all the group definitions are set, fill them out
-    for (picojson::array::const_iterator entry = all_items.begin(); entry != all_items.end(); ++entry) {
+    for(picojson::array::const_iterator entry = all_items.begin(); entry != all_items.end(); ++entry) {
         const picojson::value::object& entry_body = entry->get<picojson::object>();
 
         Item_tag group_id = entry_body.find("id")->second.get<std::string>();
@@ -607,22 +607,22 @@ void Item_factory::load_item_groups_from(const std::string file_name){
 
         //Add items
         picojson::value::object::const_iterator key_pair = entry_body.find("items");
-        if( key_pair != entry_body.end() ){
-            if( !(key_pair->second.is<picojson::array>()) ){
+        if(key_pair != entry_body.end()) {
+            if(!(key_pair->second.is<picojson::array>())) {
                 std::cerr << "Invalid item list for group definition '"+group_id+"', list of items not an array." << std::endl;
             } else {
                 //We have confirmed that we have a list of SOMETHING, now let's add them one at a time.
                 const picojson::array& items_to_add = key_pair->second.get<picojson::array>();
-                for (picojson::array::const_iterator item_pair = items_to_add.begin(); item_pair != items_to_add.end(); ++item_pair) {
+                for(picojson::array::const_iterator item_pair = items_to_add.begin(); item_pair != items_to_add.end(); ++item_pair) {
                     //Before adding, make sure this element is in the right format, namely ["TAG_NAME", frequency number]
-                    if(!(item_pair->is<picojson::array>())){
+                    if(!(item_pair->is<picojson::array>())) {
                         std::cerr << "Invalid item list for group definition '"+group_id+"', element is not an array." << std::endl;
-                    } else if(item_pair->get<picojson::array>().size()!=2){
+                    } else if(item_pair->get<picojson::array>().size()!=2) {
                         std::cerr << "Invalid item list for group definition '"+group_id+"', element does not have 2 values." << std::endl;
                     } else {
                         picojson::array item_frequency_array = item_pair->get<picojson::array>();
                         //Finally, insure that the first value is a string, and the second is a number
-                        if(!item_frequency_array[0].is<std::string>() || !item_frequency_array[1].is<double>() ){
+                        if(!item_frequency_array[0].is<std::string>() || !item_frequency_array[1].is<double>()) {
                             std::cerr << "Invalid item list for group definition '"+group_id+"', element is not a valid tag/frequency pair." << std::endl;
                         } else {
                             current_group.add_entry(item_frequency_array[0].get<std::string>(), (int)item_frequency_array[1].get<double>());
@@ -634,22 +634,22 @@ void Item_factory::load_item_groups_from(const std::string file_name){
 
         //Add groups
         key_pair = entry_body.find("groups");
-        if(key_pair != entry_body.end()){
-            if( !(key_pair->second.is<picojson::array>()) ){
+        if(key_pair != entry_body.end()) {
+            if(!(key_pair->second.is<picojson::array>())) {
                 std::cerr << "Invalid group list for group definition '"+group_id+"', list of items not an array." << std::endl;
             } else {
                 //We have confirmed that we have a list of SOMETHING, now let's add them one at a time.
                 const picojson::array& items_to_add = key_pair->second.get<picojson::array>();
-                for (picojson::array::const_iterator item_pair = items_to_add.begin(); item_pair != items_to_add.end(); ++item_pair) {
+                for(picojson::array::const_iterator item_pair = items_to_add.begin(); item_pair != items_to_add.end(); ++item_pair) {
                     //Before adding, make sure this element is in the right format, namely ["TAG_NAME", frequency number]
-                    if(!(item_pair->is<picojson::array>())){
+                    if(!(item_pair->is<picojson::array>())) {
                         std::cerr << "Invalid group list for group definition '"+group_id+"', element is not an array." << std::endl;
-                    } else if(item_pair->get<picojson::array>().size()!=2){
+                    } else if(item_pair->get<picojson::array>().size()!=2) {
                         std::cerr << "Invalid group list for group definition '"+group_id+"', element does not have 2 values." << std::endl;
                     } else {
                         picojson::array item_frequency_array = item_pair->get<picojson::array>();
                         //Finally, insure that the first value is a string, and the second is a number
-                        if(!item_frequency_array[0].is<std::string>() || !item_frequency_array[1].is<double>() ){
+                        if(!item_frequency_array[0].is<std::string>() || !item_frequency_array[1].is<double>()) {
                             std::cerr << "Invalid group list for group definition '"+group_id+"', element is not a valid tag/frequency pair." << std::endl;
                         } else {
                             Item_group* subgroup = m_template_groups.find(item_frequency_array[0].get<std::string>())->second;
@@ -663,36 +663,36 @@ void Item_factory::load_item_groups_from(const std::string file_name){
 }
 
 //Grab color, with appropriate error handling
-nc_color Item_factory::color_from_string(std::string new_color){
-    if("red"==new_color){
+nc_color Item_factory::color_from_string(std::string new_color) {
+    if("red"==new_color) {
         return c_red;
-    } else if("blue"==new_color){
+    } else if("blue"==new_color) {
         return c_blue;
-    } else if("green"==new_color){
+    } else if("green"==new_color) {
         return c_green;
-    } else if("light_cyan"==new_color){
+    } else if("light_cyan"==new_color) {
         return c_ltcyan;
-    } else if("brown"==new_color){
+    } else if("brown"==new_color) {
         return c_brown;
-    } else if("light_red"==new_color){
+    } else if("light_red"==new_color) {
         return c_ltred;
-    } else if("white"==new_color){
+    } else if("white"==new_color) {
         return c_white;
-    } else if("light_blue"==new_color){
+    } else if("light_blue"==new_color) {
         return c_ltblue;
-    } else if("yellow"==new_color){
+    } else if("yellow"==new_color) {
         return c_yellow;
-    } else if("magenta"==new_color){
+    } else if("magenta"==new_color) {
         return c_magenta;
-    } else if("cyan"==new_color){
+    } else if("cyan"==new_color) {
         return c_cyan;
-    } else if("light_gray"==new_color){
+    } else if("light_gray"==new_color) {
         return c_ltgray;
-    } else if("dark_gray"==new_color){
+    } else if("dark_gray"==new_color) {
         return c_dkgray;
-    } else if("light_green"==new_color){
+    } else if("light_green"==new_color) {
         return c_ltgreen;
-    } else if("pink"==new_color){
+    } else if("pink"==new_color) {
         return c_pink;
     } else {
         debugmsg("Received invalid color property %s. Color is required.", new_color.c_str());
@@ -700,68 +700,68 @@ nc_color Item_factory::color_from_string(std::string new_color){
     }
 }
 
-ammotype Item_factory::ammo_from_string(std::string new_ammo){
-    if("nail"==new_ammo){
+ammotype Item_factory::ammo_from_string(std::string new_ammo) {
+    if("nail"==new_ammo) {
         return AT_NAIL;
-    } else if ("BB" == new_ammo) {
+    } else if("BB" == new_ammo) {
         return AT_BB;
-    } else if ("pebble" == new_ammo) {
+    } else if("pebble" == new_ammo) {
         return AT_PEBBLE;
-    } else if ("bolt" == new_ammo) {
+    } else if("bolt" == new_ammo) {
         return AT_BOLT;
-    } else if ("arrow" == new_ammo) {
+    } else if("arrow" == new_ammo) {
         return AT_ARROW;
-    } else if ("shot" == new_ammo) {
+    } else if("shot" == new_ammo) {
         return AT_SHOT;
-    } else if (".22" == new_ammo) {
+    } else if(".22" == new_ammo) {
         return AT_22;
-    } else if ("9mm" == new_ammo) {
+    } else if("9mm" == new_ammo) {
         return AT_9MM;
-    } else if ("7.62x25mm" == new_ammo) {
+    } else if("7.62x25mm" == new_ammo) {
         return AT_762x25;
-    } else if (".38" == new_ammo) {
+    } else if(".38" == new_ammo) {
         return AT_38;
-    } else if (".40" == new_ammo) {
+    } else if(".40" == new_ammo) {
         return AT_40;
-    } else if (".44" == new_ammo) {
+    } else if(".44" == new_ammo) {
         return AT_44;
-    } else if (".45" == new_ammo) {
+    } else if(".45" == new_ammo) {
         return AT_45;
-    } else if ("5.7mm" == new_ammo) {
+    } else if("5.7mm" == new_ammo) {
         return AT_57;
-    } else if ("4.6mm" == new_ammo) {
+    } else if("4.6mm" == new_ammo) {
         return AT_46;
-    } else if ("7.62x39mm" == new_ammo) {
+    } else if("7.62x39mm" == new_ammo) {
         return AT_762;
-    } else if (".223" == new_ammo) {
+    } else if(".223" == new_ammo) {
         return AT_223;
-    } else if (".30-06" == new_ammo) {
+    } else if(".30-06" == new_ammo) {
         return AT_3006;
-    } else if (".308" == new_ammo) {
+    } else if(".308" == new_ammo) {
         return AT_308;
-    } else if ("40mm" == new_ammo) {
+    } else if("40mm" == new_ammo) {
         return AT_40MM;
-    } else if ("66mm" == new_ammo) {
+    } else if("66mm" == new_ammo) {
         return AT_66MM;
-    } else if ("gasoline" == new_ammo) {
+    } else if("gasoline" == new_ammo) {
         return AT_GAS;
-    } else if ("thread" == new_ammo) {
+    } else if("thread" == new_ammo) {
         return AT_THREAD;
-    } else if ("battery" == new_ammo) {
+    } else if("battery" == new_ammo) {
         return AT_BATT;
-    } else if ("plutonium" == new_ammo) {
+    } else if("plutonium" == new_ammo) {
         return AT_PLUT;
-    } else if ("muscle" == new_ammo) {
+    } else if("muscle" == new_ammo) {
         return AT_MUSCLE;
-    } else if ("fusion" == new_ammo) {
+    } else if("fusion" == new_ammo) {
         return AT_FUSION;
-    } else if ("12mm" == new_ammo) {
+    } else if("12mm" == new_ammo) {
         return AT_12MM;
-    } else if ("plasma" == new_ammo) {
+    } else if("plasma" == new_ammo) {
         return AT_PLASMA;
-    } else if ("water" == new_ammo) {
+    } else if("water" == new_ammo) {
         return AT_WATER;
-    } else if ("none" == new_ammo) {
+    } else if("none" == new_ammo) {
         return AT_NULL; // NX17 and other special weapons
     } else {
         debugmsg("Read invalid ammo %s.", new_ammo.c_str());
@@ -769,11 +769,11 @@ ammotype Item_factory::ammo_from_string(std::string new_ammo){
     }
 }
 
-Use_function Item_factory::use_from_string(std::string function_name){
+Use_function Item_factory::use_from_string(std::string function_name) {
     std::map<Item_tag, Use_function>::iterator found_function = iuse_function_list.find(function_name);
 
     //Before returning, make sure sure the function actually exists
-    if(found_function != iuse_function_list.end()){
+    if(found_function != iuse_function_list.end()) {
         return found_function->second;
     } else {
         //Otherwise, return a hardcoded function we know exists (hopefully)
@@ -785,13 +785,13 @@ Use_function Item_factory::use_from_string(std::string function_name){
 void Item_factory::set_flag_by_string(unsigned& cur_flags, std::string new_flag, std::string flag_type)
 {
     std::map<Item_tag, unsigned> flag_map;
-    if(flag_type=="ammo"){
-      flag_map = ammo_flags_list;
-    } else if(flag_type=="techniques"){
-      flag_map = techniques_list;
-    } else if(flag_type=="ammo_effects"){
+    if(flag_type=="ammo") {
+        flag_map = ammo_flags_list;
+    } else if(flag_type=="techniques") {
+        flag_map = techniques_list;
+    } else if(flag_type=="ammo_effects") {
         flag_map = ammo_effects_list;
-    } else if(flag_type=="bodyparts"){
+    } else if(flag_type=="bodyparts") {
         flag_map = bodyparts_list;
     }
 
@@ -811,13 +811,13 @@ void Item_factory::set_bitmask_by_string(std::map<Item_tag, unsigned> flag_map, 
     }
 }
 
-unsigned Item_factory::flags_from_json(catajson flag_list, std::string flag_type){
+unsigned Item_factory::flags_from_json(catajson flag_list, std::string flag_type) {
     //If none is found, just use the standard none action
     unsigned flag = 0;
     //Otherwise, grab the right label to look for
-    if (flag_list.is_array())
+    if(flag_list.is_array())
     {
-        for (flag_list.set_begin(); flag_list.has_curr(); flag_list.next())
+        for(flag_list.set_begin(); flag_list.has_curr(); flag_list.next())
         {
             set_flag_by_string(flag, flag_list.curr().as_string(), flag_type);
         }
@@ -830,35 +830,35 @@ unsigned Item_factory::flags_from_json(catajson flag_list, std::string flag_type
     return flag;
 }
 
-bool Item_factory::is_mod_target(catajson targets, std::string weapon){
+bool Item_factory::is_mod_target(catajson targets, std::string weapon) {
     //If none is found, just use the standard none action
     unsigned is_included = false;
     //Otherwise, grab the right label to look for
-    if (targets.is_array())
+    if(targets.is_array())
     {
-        for (targets.set_begin(); targets.has_curr() && !is_included; targets.next())
+        for(targets.set_begin(); targets.has_curr() && !is_included; targets.next())
         {
-            if(targets.curr().as_string() == weapon){
-              is_included=true;
+            if(targets.curr().as_string() == weapon) {
+                is_included=true;
             }
         }
     }
     else
     {
-        if(targets.as_string() == weapon){
-          is_included=true;
+        if(targets.as_string() == weapon) {
+            is_included=true;
         }
     }
     return is_included;
 }
 
-void Item_factory::set_material_from_json(Item_tag new_id, catajson mat_list){
+void Item_factory::set_material_from_json(Item_tag new_id, catajson mat_list) {
     //If the value isn't found, just return a group of null materials
     std::string material_list[2] = {"null", "null"};
 
-    if (mat_list.is_array())
+    if(mat_list.is_array())
     {
-        if (mat_list.has(2))
+        if(mat_list.has(2))
         {
             debugmsg("Too many materials provided for item %s", new_id.c_str());
         }
@@ -876,14 +876,14 @@ void Item_factory::set_material_from_json(Item_tag new_id, catajson mat_list){
 }
 
 
-phase_id Item_factory::phase_from_tag(Item_tag name){
-    if(name == "liquid"){
+phase_id Item_factory::phase_from_tag(Item_tag name) {
+    if(name == "liquid") {
         return LIQUID;
-    } else if(name == "solid"){
+    } else if(name == "solid") {
         return SOLID;
-    } else if(name == "gas"){
+    } else if(name == "gas") {
         return GAS;
-    } else if(name == "plasma"){
+    } else if(name == "plasma") {
         return PLASMA;
     } else {
         return PNULL;
