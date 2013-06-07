@@ -18,10 +18,10 @@
 void exit_handler(int s);
 
 #ifdef USE_WINMAIN
-int APIENTRY	WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int APIENTRY	WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
- int argc = __argc;
- char **argv = __argv;
+    int argc = __argc;
+    char **argv = __argv;
 #else
 int main(int argc, char *argv[])
 {
