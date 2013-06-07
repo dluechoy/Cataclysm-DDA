@@ -62,13 +62,11 @@ bool WinCreate()
     const SDL_VideoInfo* video_info;
     int init_flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
 
-    if(SDL_Init(init_flags) < 0)
-    {
+    if(SDL_Init(init_flags) < 0) {
         return false;
     }
 
-    if(TTF_Init()<0)
-    {
+    if(TTF_Init()<0) {
         return false;
     }
 
@@ -88,7 +86,7 @@ bool WinCreate()
 
     SDL_ShowCursor(SDL_DISABLE);
 
-    if(screen==NULL) return false;
+    if(screen==NULL) { return false; }
 
     ClearScreen();
 
@@ -97,7 +95,7 @@ bool WinCreate()
 
 void WinDestroy()
 {
-    if(screen) SDL_FreeSurface(screen);
+    if(screen) { SDL_FreeSurface(screen); }
     screen = NULL;
 };
 
@@ -136,8 +134,7 @@ static void OuputText(char* t, int x, int y, int n, unsigned char color)
     strncpy(buf, t, n);
     buf[n] = '\0';
     SDL_Surface* text = TTF_RenderText_Solid(font, buf, windowsPalette[color]);
-    if(text)
-    {
+    if(text) {
         SDL_Rect rect;
         rect.x = x;
         rect.y = y;
@@ -154,8 +151,7 @@ void DrawWindow(WINDOW *win)
     char tmp;
 
     for(j=0; j<win->height; j++) {
-        if(win->line[j].touched)
-        {
+        if(win->line[j].touched) {
             win->line[j].touched=false;
 
             for(i=0; i<win->width; i++) {
@@ -172,52 +168,52 @@ void DrawWindow(WINDOW *win)
                         //    }     //and this line too.
                     } else if(tmp < 0) {
                         switch(tmp) {
-                            case -60://box bottom/top side (horizontal line)
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
-                                break;
-                            case -77://box left/right side (vertical line)
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
-                                break;
-                            case -38://box top left
-                                HorzLineDIB(drawx+halfwidth,drawy+halfheight,drawx+fontwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy+halfheight,drawy+fontheight,2,FG);
-                                break;
-                            case -65://box top right
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+halfwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy+halfheight,drawy+fontheight,2,FG);
-                                break;
-                            case -39://box bottom right
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+halfwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+halfheight+1,2,FG);
-                                break;
-                            case -64://box bottom left
-                                HorzLineDIB(drawx+halfwidth,drawy+halfheight,drawx+fontwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+halfheight+1,2,FG);
-                                break;
-                            case -63://box bottom north T (left, right, up)
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+halfheight,2,FG);
-                                break;
-                            case -61://box bottom east T (up, right, down)
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
-                                HorzLineDIB(drawx+halfwidth,drawy+halfheight,drawx+fontwidth,1,FG);
-                                break;
-                            case -62://box bottom south T (left, right, down)
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy+halfheight,drawy+fontheight,2,FG);
-                                break;
-                            case -59://box X (left down up right)
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
-                                break;
-                            case -76://box bottom east T (left, down, up)
-                                VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
-                                HorzLineDIB(drawx,drawy+halfheight,drawx+halfwidth,1,FG);
-                                break;
-                            default:
-                                // SetTextColor(DC,_windows[w].line[j].chars[i].color.FG);
-                                // TextOut(DC,drawx,drawy,&tmp,1);
-                                break;
+                        case -60://box bottom/top side (horizontal line)
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
+                            break;
+                        case -77://box left/right side (vertical line)
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
+                            break;
+                        case -38://box top left
+                            HorzLineDIB(drawx+halfwidth,drawy+halfheight,drawx+fontwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy+halfheight,drawy+fontheight,2,FG);
+                            break;
+                        case -65://box top right
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+halfwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy+halfheight,drawy+fontheight,2,FG);
+                            break;
+                        case -39://box bottom right
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+halfwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+halfheight+1,2,FG);
+                            break;
+                        case -64://box bottom left
+                            HorzLineDIB(drawx+halfwidth,drawy+halfheight,drawx+fontwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+halfheight+1,2,FG);
+                            break;
+                        case -63://box bottom north T (left, right, up)
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+halfheight,2,FG);
+                            break;
+                        case -61://box bottom east T (up, right, down)
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
+                            HorzLineDIB(drawx+halfwidth,drawy+halfheight,drawx+fontwidth,1,FG);
+                            break;
+                        case -62://box bottom south T (left, right, down)
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy+halfheight,drawy+fontheight,2,FG);
+                            break;
+                        case -59://box X (left down up right)
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+fontwidth,1,FG);
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
+                            break;
+                        case -76://box bottom east T (left, down, up)
+                            VertLineDIB(drawx+halfwidth,drawy,drawy+fontheight,2,FG);
+                            HorzLineDIB(drawx,drawy+halfheight,drawx+halfwidth,1,FG);
+                            break;
+                        default:
+                            // SetTextColor(DC,_windows[w].line[j].chars[i].color.FG);
+                            // TextOut(DC,drawx,drawy,&tmp,1);
+                            break;
                         }
                     };//switch (tmp)
                 }//(tmp < 0)
@@ -235,46 +231,39 @@ void DrawWindow(WINDOW *win)
 void CheckMessages()
 {
     SDL_Event ev;
-    while(SDL_PollEvent(&ev))
-    {
-        switch(ev.type)
-        {
-            case SDL_KEYDOWN:
-                if(ev.key.keysym.unicode != 0) {
-                    lastchar = ev.key.keysym.unicode;
-                    switch(lastchar) {
-                        case 13:            //Reroute ENTER key for compatilbity purposes
-                            lastchar=10;
-                            break;
-                        case 8:             //Reroute BACKSPACE key for compatilbity purposes
-                            lastchar=127;
-                            break;
-                    }
+    while(SDL_PollEvent(&ev)) {
+        switch(ev.type) {
+        case SDL_KEYDOWN:
+            if(ev.key.keysym.unicode != 0) {
+                lastchar = ev.key.keysym.unicode;
+                switch(lastchar) {
+                case 13:            //Reroute ENTER key for compatilbity purposes
+                    lastchar=10;
+                    break;
+                case 8:             //Reroute BACKSPACE key for compatilbity purposes
+                    lastchar=127;
+                    break;
                 }
-                if(ev.key.keysym.sym==SDLK_LEFT) {
-                    lastchar = KEY_LEFT;
-                }
-                else if(ev.key.keysym.sym==SDLK_RIGHT) {
-                    lastchar = KEY_RIGHT;
-                }
-                else if(ev.key.keysym.sym==SDLK_UP) {
-                    lastchar = KEY_UP;
-                }
-                else if(ev.key.keysym.sym==SDLK_DOWN) {
-                    lastchar = KEY_DOWN;
-                }
-                else if(ev.key.keysym.sym==SDLK_PAGEUP) {
-                    lastchar = KEY_PPAGE;
-                }
-                else if(ev.key.keysym.sym==SDLK_PAGEDOWN) {
-                    lastchar = KEY_NPAGE;
+            }
+            if(ev.key.keysym.sym==SDLK_LEFT) {
+                lastchar = KEY_LEFT;
+            } else if(ev.key.keysym.sym==SDLK_RIGHT) {
+                lastchar = KEY_RIGHT;
+            } else if(ev.key.keysym.sym==SDLK_UP) {
+                lastchar = KEY_UP;
+            } else if(ev.key.keysym.sym==SDLK_DOWN) {
+                lastchar = KEY_DOWN;
+            } else if(ev.key.keysym.sym==SDLK_PAGEUP) {
+                lastchar = KEY_PPAGE;
+            } else if(ev.key.keysym.sym==SDLK_PAGEDOWN) {
+                lastchar = KEY_NPAGE;
 
-                }
-                break;
-            case SDL_QUIT:
-                endwin();
-                exit(0);
-                break;
+            }
+            break;
+        case SDL_QUIT:
+            endwin();
+            exit(0);
+            break;
 
         }
     }
@@ -331,12 +320,10 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x)
     }
 
     // default values
-    if(ncols == 0)
-    {
+    if(ncols == 0) {
         ncols = TERMX - begin_x;
     }
-    if(nlines == 0)
-    {
+    if(nlines == 0) {
         nlines = TERMY - begin_y;
     }
 
@@ -355,14 +342,12 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x)
     newwindow->cursory=0;
     newwindow->line = new curseline[nlines];
 
-    for(j=0; j<nlines; j++)
-    {
+    for(j=0; j<nlines; j++) {
         newwindow->line[j].chars= new char[ncols];
         newwindow->line[j].FG= new char[ncols];
         newwindow->line[j].BG= new char[ncols];
         newwindow->line[j].touched=true;//Touch them all !?
-        for(i=0; i<ncols; i++)
-        {
+        for(i=0; i<ncols; i++) {
             newwindow->line[j].chars[i]=0;
             newwindow->line[j].FG[i]=0;
             newwindow->line[j].BG[i]=0;
@@ -388,7 +373,8 @@ int delwin(WINDOW *win)
     return 1;
 }
 
-inline int newline(WINDOW *win) {
+inline int newline(WINDOW *win)
+{
     if(win->cursory < win->height - 1) {
         win->cursory++;
         win->cursorx=0;
@@ -397,11 +383,13 @@ inline int newline(WINDOW *win) {
     return 0;
 }
 
-inline void addedchar(WINDOW *win) {
+inline void addedchar(WINDOW *win)
+{
     win->cursorx++;
     win->line[win->cursory].touched=true;
-    if(win->cursorx > win->width)
+    if(win->cursorx > win->width) {
         newline(win);
+    }
 }
 
 
@@ -416,25 +404,33 @@ int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs, chtype tl, 
     int oldx=win->cursorx;//methods below move the cursor, save the value!
     int oldy=win->cursory;//methods below move the cursor, save the value!
     if(ls>0)
-        for(j=1; j<win->height-1; j++)
+        for(j=1; j<win->height-1; j++) {
             mvwaddch(win, j, 0, 179);
+        }
     if(rs>0)
-        for(j=1; j<win->height-1; j++)
+        for(j=1; j<win->height-1; j++) {
             mvwaddch(win, j, win->width-1, 179);
+        }
     if(ts>0)
-        for(i=1; i<win->width-1; i++)
+        for(i=1; i<win->width-1; i++) {
             mvwaddch(win, 0, i, 196);
+        }
     if(bs>0)
-        for(i=1; i<win->width-1; i++)
+        for(i=1; i<win->width-1; i++) {
             mvwaddch(win, win->height-1, i, 196);
-    if(tl>0)
+        }
+    if(tl>0) {
         mvwaddch(win,0, 0, 218);
-    if(tr>0)
+    }
+    if(tr>0) {
         mvwaddch(win,0, win->width-1, 191);
-    if(bl>0)
+    }
+    if(bl>0) {
         mvwaddch(win,win->height-1, 0, 192);
-    if(br>0)
+    }
+    if(br>0) {
         mvwaddch(win,win->height-1, win->width-1, 217);
+    }
     //_windows[w].cursorx=oldx;//methods above move the cursor, put it back
     //_windows[w].cursory=oldy;//methods above move the cursor, put it back
     wmove(win,oldy,oldx);
@@ -445,9 +441,10 @@ int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs, chtype tl, 
 //Refreshes a window, causing it to redraw on top.
 int wrefresh(WINDOW *win)
 {
-    if(win==0) win=mainwin;
-    if(win->draw)
+    if(win==0) { win=mainwin; }
+    if(win->draw) {
         DrawWindow(win);
+    }
     return 1;
 }
 
@@ -471,29 +468,20 @@ int wgetch(WINDOW* win)
     // so although it's non-obvious, that refresh() call (and maybe InvalidateRect?) IS supposed to be there
     wrefresh(win);
     lastchar=ERR;//ERR=-1
-    if(inputdelay < 0)
-    {
-        do
-        {
+    if(inputdelay < 0) {
+        do {
             CheckMessages();
-            if(lastchar!=ERR) break;
-        }
-        while(lastchar==ERR);
-    }
-    else if(inputdelay > 0)
-    {
+            if(lastchar!=ERR) { break; }
+        } while(lastchar==ERR);
+    } else if(inputdelay > 0) {
         unsigned long starttime=SDL_GetTicks();
         unsigned long endtime;
-        do
-        {
+        do {
             CheckMessages();
             endtime=SDL_GetTicks();
-            if(lastchar!=ERR) break;
-        }
-        while(endtime<(starttime+inputdelay));
-    }
-    else
-    {
+            if(lastchar!=ERR) { break; }
+        } while(endtime<(starttime+inputdelay));
+    } else {
         CheckMessages();
     }
     return lastchar;
@@ -516,34 +504,31 @@ int getnstr(char *str, int size)
     int startX = mainwin->cursorx;
     int count = 0;
     char input;
-    while(true)
-    {
+    while(true) {
         input = getch();
         // Carriage return, Line feed and End of File terminate the input.
-        if(input == '\r' || input == '\n' || input == '\x04')
-        {
+        if(input == '\r' || input == '\n' || input == '\x04') {
             str[count] = '\x00';
             return count;
-        }
-        else if(input == 127)   // Backspace, remapped from \x8 in ProcessMessages()
-        {
-            if(count == 0)
+        } else if(input == 127) { // Backspace, remapped from \x8 in ProcessMessages()
+            if(count == 0) {
                 continue;
+            }
             str[count] = '\x00';
-            if(echoOn == 1)
+            if(echoOn == 1) {
                 mvaddch(mainwin->cursory, startX + count, ' ');
+            }
             --count;
-            if(echoOn == 1)
+            if(echoOn == 1) {
                 move(mainwin->cursory, startX + count);
-        }
-        else
-        {
-            if(count >= size - 1)   // Still need space for trailing 0x00
+            }
+        } else {
+            if(count >= size - 1) { // Still need space for trailing 0x00
                 continue;
+            }
             str[count] = input;
             ++count;
-            if(echoOn == 1)
-            {
+            if(echoOn == 1) {
                 move(mainwin->cursory, startX + count);
                 mvaddch(mainwin->cursory, startX + count, input);
             }
@@ -564,8 +549,9 @@ inline int printstring(WINDOW *win, char *fmt)
                 win->line[win->cursory].BG[win->cursorx]=win->BG;
                 win->line[win->cursory].touched=true;
                 addedchar(win);
-            } else
-                return 0; //if we try and write anything outside the window, abort completely
+            } else {
+                return 0;    //if we try and write anything outside the window, abort completely
+            }
         } else // if the character is a newline, make sure to move down a line
             if(newline(win)==0) {
                 return 0;
@@ -594,7 +580,7 @@ int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...)
     char printbuf[2048];
     vsnprintf(printbuf, 2047, fmt, args);
     va_end(args);
-    if(wmove(win,y,x)==0) return 0;
+    if(wmove(win,y,x)==0) { return 0; }
     return printstring(win,printbuf);
 };
 
@@ -606,7 +592,7 @@ int mvprintw(int y, int x, const char *fmt, ...)
     char printbuf[2048];
     vsnprintf(printbuf, 2047, fmt, args);
     va_end(args);
-    if(move(y,x)==0) return 0;
+    if(move(y,x)==0) { return 0; }
     return printstring(mainwin,printbuf);
 };
 
@@ -625,8 +611,7 @@ int printw(const char *fmt, ...)
 int werase(WINDOW *win)
 {
     int j,i;
-    for(j=0; j<win->height; j++)
-    {
+    for(j=0; j<win->height; j++) {
         for(i=0; i<win->width; i++)   {
             win->line[j].chars[i]=0;
             win->line[j].FG[i]=0;
@@ -687,7 +672,7 @@ int endwin(void)
 //adds a character to the window
 int mvwaddch(WINDOW *win, int y, int x, const chtype ch)
 {
-    if(wmove(win,y,x)==0) return 0;
+    if(wmove(win,y,x)==0) { return 0; }
     return waddch(win, ch);
 };
 
@@ -702,28 +687,28 @@ int wclear(WINDOW *win)
 //gets the max x of a window (the width)
 int getmaxx(WINDOW *win)
 {
-    if(win==0) return mainwin->width;      //StdScr
+    if(win==0) { return mainwin->width; }      //StdScr
     return win->width;
 };
 
 //gets the max y of a window (the height)
 int getmaxy(WINDOW *win)
 {
-    if(win==0) return mainwin->height;      //StdScr
+    if(win==0) { return mainwin->height; }      //StdScr
     return win->height;
 };
 
 //gets the beginning x of a window (the x pos)
 int getbegx(WINDOW *win)
 {
-    if(win==0) return mainwin->x;      //StdScr
+    if(win==0) { return mainwin->x; }      //StdScr
     return win->x;
 };
 
 //gets the beginning y of a window (the y pos)
 int getbegy(WINDOW *win)
 {
-    if(win==0) return mainwin->y;      //StdScr
+    if(win==0) { return mainwin->y; }      //StdScr
     return win->y;
 };
 
@@ -791,8 +776,8 @@ int wattron(WINDOW *win, int attrs)
     int pairNumber = (attrs & A_COLOR) >> 17;
     win->FG=colorpairs[pairNumber].FG;
     win->BG=colorpairs[pairNumber].BG;
-    if(isBold) win->FG += 8;
-    if(isBlink) win->BG += 8;
+    if(isBold) { win->FG += 8; }
+    if(isBlink) { win->BG += 8; }
     return 1;
 };
 int wattroff(WINDOW *win, int attrs)
@@ -815,42 +800,42 @@ int waddch(WINDOW *win, const chtype ch)
     charcode=ch;
 
     switch(ch) {        //LINE_NESW  - X for on, O for off
-        case 4194424:   //#define LINE_XOXO 4194424
-            charcode=179;
-            break;
-        case 4194417:   //#define LINE_OXOX 4194417
-            charcode=196;
-            break;
-        case 4194413:   //#define LINE_XXOO 4194413
-            charcode=192;
-            break;
-        case 4194412:   //#define LINE_OXXO 4194412
-            charcode=218;
-            break;
-        case 4194411:   //#define LINE_OOXX 4194411
-            charcode=191;
-            break;
-        case 4194410:   //#define LINE_XOOX 4194410
-            charcode=217;
-            break;
-        case 4194422:   //#define LINE_XXOX 4194422
-            charcode=193;
-            break;
-        case 4194420:   //#define LINE_XXXO 4194420
-            charcode=195;
-            break;
-        case 4194421:   //#define LINE_XOXX 4194421
-            charcode=180;
-            break;
-        case 4194423:   //#define LINE_OXXX 4194423
-            charcode=194;
-            break;
-        case 4194414:   //#define LINE_XXXX 4194414
-            charcode=197;
-            break;
-        default:
-            charcode = (char)ch;
-            break;
+    case 4194424:   //#define LINE_XOXO 4194424
+        charcode=179;
+        break;
+    case 4194417:   //#define LINE_OXOX 4194417
+        charcode=196;
+        break;
+    case 4194413:   //#define LINE_XXOO 4194413
+        charcode=192;
+        break;
+    case 4194412:   //#define LINE_OXXO 4194412
+        charcode=218;
+        break;
+    case 4194411:   //#define LINE_OOXX 4194411
+        charcode=191;
+        break;
+    case 4194410:   //#define LINE_XOOX 4194410
+        charcode=217;
+        break;
+    case 4194422:   //#define LINE_XXOX 4194422
+        charcode=193;
+        break;
+    case 4194420:   //#define LINE_XXXO 4194420
+        charcode=195;
+        break;
+    case 4194421:   //#define LINE_XOXX 4194421
+        charcode=180;
+        break;
+    case 4194423:   //#define LINE_OXXX 4194423
+        charcode=194;
+        break;
+    case 4194414:   //#define LINE_XXXX 4194414
+        charcode=197;
+        break;
+    default:
+        charcode = (char)ch;
+        break;
     }
 
 
