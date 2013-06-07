@@ -114,7 +114,7 @@ void game::init_ui(){
     clear();	// Clear the screen
     intro();	// Print an intro screen, make sure we're at least 80x25
 
-    #if (defined _WIN32 || defined __WIN32__)
+    #if (defined TILES || defined _WIN32 || defined __WIN32__)
         TERMX = 55 + (OPTIONS[OPT_VIEWPORT_X] * 2 + 1);
         TERMY = OPTIONS[OPT_VIEWPORT_Y] * 2 + 1;
         VIEWX = (OPTIONS[OPT_VIEWPORT_X] > 60) ? 60 : OPTIONS[OPT_VIEWPORT_X];
@@ -175,7 +175,8 @@ void game::init_ui(){
     w_status = newwin(STATUS_HEIGHT, STATUS_WIDTH, MONINFO_HEIGHT+MESSAGES_HEIGHT+LOCATION_HEIGHT + VIEW_OFFSET_Y, TERMX - STATUS_WIDTH - VIEW_OFFSET_X);
     werase(w_status);
 
-    w_void = newwin(TERMY-(MONINFO_HEIGHT+MESSAGES_HEIGHT+LOCATION_HEIGHT+STATUS_HEIGHT), STATUS_WIDTH, MONINFO_HEIGHT+MESSAGES_HEIGHT+LOCATION_HEIGHT+STATUS_HEIGHT + VIEW_OFFSET_Y, TERMX - STATUS_WIDTH - VIEW_OFFSET_X);
+    w_void_lines=TERMY-(MONINFO_HEIGHT+MESSAGES_HEIGHT+LOCATION_HEIGHT+STATUS_HEIGHT);
+    w_void = newwin(w_void_lines, STATUS_WIDTH, MONINFO_HEIGHT+MESSAGES_HEIGHT+LOCATION_HEIGHT+STATUS_HEIGHT + VIEW_OFFSET_Y, TERMX - STATUS_WIDTH - VIEW_OFFSET_X);
     werase(w_void);
 }
 
@@ -3267,6 +3268,15 @@ void game::draw()
  wrefresh(w_status);
  // Draw messages
  write_msg();
+ if ( w_void_lines > 0 ) {
+     if (m.graffiti_at(u.posx, u.posy).contents) {
+         mvwprintz(w_void, 0, 1, c_white,"Written here: ");
+         wprintz(w_void, c_magenta,"%s", m.graffiti_at(u.posx, u.posy).contents->substr(0, STATUS_WIDTH-15 ).c_str() );
+     } else {
+         mvwprintw(w_void, 0, 0,"%s", std::string(STATUS_WIDTH, ' ').c_str());
+     }
+     wrefresh(w_void);
+ }
 }
 
 bool game::isBetween(int test, int down, int up)
@@ -3630,7 +3640,9 @@ unsigned char game::light_level()
  }
  if (ret < 8 && event_queued(EVENT_ARTIFACT_LIGHT))
   ret = 8;
-
+ if(ret < 1)
+  ret = 1;
+  
  latest_lightlevel = ret;
  latest_lightlevel_turn = turn;
  return ret;
@@ -4995,14 +5007,14 @@ void game::smash()
                     damage = full_pulp_threshold - it->damage;
                 }
                 rn -= (damage + 1) * it->volume(); // slight efficiency loss to swing
-                
+
                 // chance of a critical success, higher chance for small critters
                 // comes AFTER the loss of power from the above calculation
                 if (one_in(it->volume()))
                 {
                     damage++;
                 }
-                
+
                 if (damage > 0)
                 {
                     add_msg("You %sdamage the %s!", (damage > 1 ? "greatly " : ""), it->tname().c_str());
@@ -5012,6 +5024,19 @@ void game::smash()
                         add_msg("The corpse is now thoroughly pulped.");
                         it->damage = 4;
                         // TODO mark corpses as inactive when appropriate
+                    }
+                    // Splatter some blood around
+                    for (int x = u.posx + smashx - 1; x <= u.posx + smashx + 1; x++) {
+                        for (int y = u.posy + smashy - 1; y <= u.posy + smashy + 1; y++) {
+                            if (!one_in(damage+1)) {
+                                if (m.field_at(x, y).type == fd_blood &&
+                                    m.field_at(x, y).density < 3) {
+                                    m.field_at(x, y).density++;
+                                } else {
+                                    m.add_field(this, x, y, fd_blood, 1);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -7751,20 +7776,18 @@ void game::drop(char chInput)
    add_msg("You drop several items.");
  }
 
- bool vh_overflow = false;
- int i = 0;
  if (to_veh) {
-  for (i = 0; i < dropped.size(); i++)
-   if (!veh->add_item (veh_part, dropped[i])) {
-    vh_overflow = true;
-    break;
-   }
+  bool vh_overflow = false;
+  for (int i = 0; i < dropped.size(); i++) {
+   vh_overflow = vh_overflow || !veh->add_item (veh_part, dropped[i]);
+   if (vh_overflow)
+    m.add_item(u.posx, u.posy, dropped[i]);
+  }
   if (vh_overflow)
    add_msg ("The trunk is full, so some items fall on the ground.");
- }
- if (!to_veh || vh_overflow)
-  for (i = 0; i < dropped.size(); i++) {
-    m.add_item_or_charges(u.posx, u.posy, dropped[i]);
+ } else {
+  for (int i = 0; i < dropped.size(); i++)
+   m.add_item_or_charges(u.posx, u.posy, dropped[i]);
  }
 }
 
@@ -7840,7 +7863,7 @@ void game::drop_in_direction()
     m.add_item(dirx, diry, dropped[i]);
   }
   if (vh_overflow)
-   add_msg ("Trunk is full, so some items fall on the ground.");
+   add_msg ("The trunk is full, so some items fall on the ground.");
  } else {
   for (int i = 0; i < dropped.size(); i++)
    m.add_item_or_charges(dirx, diry, dropped[i]);
@@ -8224,7 +8247,7 @@ void game::complete_butcher(int index)
     else
      meat = itypes["veggy_tainted"];
   } else {
-   if (corpse->mat == "flesh")
+   if (corpse->mat == "flesh" || corpse->mat == "hflesh")
     if(corpse->has_flag(MF_HUMAN))
      meat = itypes["human_flesh"];
     else
@@ -8825,7 +8848,7 @@ void game::plmove(int x, int y)
       }
 
 // Calculate cost of moving
-  u.moves -= u.run_cost(m.move_cost(x, y) * 50);
+  u.moves -= u.run_cost(m.move_cost(x, y) * 50 ) * ( trigdist && x != u.posx && y != u.posy ? 1.41 : 1 );
 
 // Adjust recoil down
   if (u.recoil > 0) {
@@ -8988,6 +9011,7 @@ void game::plswim(int x, int y)
  if (x < SEEX * int(MAPSIZE / 2) || y < SEEY * int(MAPSIZE / 2) ||
      x >= SEEX * (1 + int(MAPSIZE / 2)) || y >= SEEY * (1 + int(MAPSIZE / 2)))
   update_map(x, y);
+ bool diagonal=( x != u.posx && y != u.posy );
  u.posx = x;
  u.posy = y;
  if (!m.has_flag(swimmable, x, y)) {
@@ -9015,7 +9039,7 @@ void game::plswim(int x, int y)
   else
    popup("You need to breathe but you can't swim!  Get to dry land, quick!");
  }
- u.moves -= (movecost > 200 ? 200 : movecost);
+ u.moves -= (movecost > 200 ? 200 : movecost)  * (trigdist && diagonal ? 1.41 : 1 );
  u.inv.rust_iron_items();
 }
 

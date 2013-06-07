@@ -13,3 +13,11 @@ Cataclysm.exe
 CataclysmWin.depend
 CataclysmWin.layout
 Tools/AStyle/
+=======
+
+# Visual Studio files
+*.suo
+*.user
+Cataclysm.sdf
+Release*/
+>>>>>>> refs/heads/master

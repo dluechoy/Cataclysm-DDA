@@ -48,7 +48,7 @@
 #define EXPLOSION_SPEED 70000000
 
 #define PICKUP_RANGE 2
-
+extern bool trigdist;
 enum tut_type {
  TUT_NULL,
  TUT_BASIC, TUT_COMBAT,
@@ -276,6 +276,7 @@ class game
 
   std::map<int, std::map<int, bool> > mapRain;
 
+  int w_void_lines;
   WINDOW *w_terrain;
   WINDOW *w_minimap;
   WINDOW *w_HP;
