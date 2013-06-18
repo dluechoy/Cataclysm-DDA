@@ -1,4 +1,4 @@
-#ifndef _LINE_H_
+﻿#ifndef _LINE_H_
 #define _LINE_H_
 
 #include <vector>
@@ -32,8 +32,51 @@ direction direction_from(int x1, int y1, int x2, int y2);
 std::string direction_name(direction dir);
 std::string direction_name_short(direction dir);
 
+// meow_vec2d - dummy class for lists, angles in radians.
+struct cat_vec2d {
+  double magnitude; //magnitude, ρ rho
+  double angle; //azimuth, θ theta
+  //zenith, φ phi
 
+  cat_vec2d(double rho = 0.0d, double theta = 0.0d) : magnitude (rho), angle (theta) {}
+  cat_vec2d(const cat_vec2d &v) : magnitude (v.magnitude), angle (v.angle) {}
+  ~cat_vec2d(){}
 
+//bool operator<(cat_vec2d other) const
+//bool operator<=(cat_vec2d other) const
+//bool operator!=(cat_vec2d other) const
+//bool operator==(cat_vec2d other) const
+//bool operator>=(cat_vec2d other) const
+//bool operator>(cat_vec2d other) const
+
+// ° because ∠ is not widely supported
+//bool operator°<(cat_vec2d other) const
+//bool operator°<=(cat_vec2d other) const
+//bool operator°!=(cat_vec2d other) const
+//bool operator°==(cat_vec2d other) const
+//bool operator°>=(cat_vec2d other) const
+//bool operator°>(cat_vec2d other) const
+
+//addition,subtraction
+// cat_vec2d operator+ (const cat_vec2d &rhs);
+// cat_vec2d operator- (const cat_vec2d &rhs);
+
+//scalar 
+// cat_vec2d operator* (const double rhs);
+// cat_vec2d operator/ (const double rhs);
+// cat_vec2d operator* (const cat_vec2d &rhs);
+// cat_vec2d operator/ (const cat_vec2d &rhs);
+
+//norm
+//cat_vec2d operator⊲ ();
+
+//cat_vec2d operator⨼ (const cat_vec2d &rhs);
+//dot product
+//cat_vec2d operator∙ (const cat_vec2d &rhs);
+//cross product
+// cat_vec2d operator× (const cat_vec2d &rhs);
+
+};
 
 // weird class for 2d vectors where dist is derived from rl_dist
 struct rl_vec2d {
