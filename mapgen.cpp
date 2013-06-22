@@ -5652,8 +5652,8 @@ mapf::basic_bind("r d h 6 x g G , . - | + D t c ^ % = &",
     build_shaft = false;
    } else {
     bool okay = true;
-    for (int x = x1; x <= x2 && okay; x++) {
-     for (int y = y1; y <= y2 && okay; y++) {
+    for (int x = x1 - 1; x <= x2 + 1 && okay; x++) {
+     for (int y = y1 - 1; y <= y2 + 1 && okay; y++) {
       if (ter(x, y) != t_grass && ter(x, y) != t_dirt)
        okay = false;
      }
@@ -7607,6 +7607,7 @@ h,h,g,,,|###############\n\
          t_pavement, t_bookcase, t_desk, t_console_broken, t_toilet, t_bed, t_door_bar_locked, t_grass, t_floor, t_bars, t_concrete_h,
          t_concrete_v, t_fence_barbed, t_chainfence_h, t_chainfence_v, t_sink),
      mapf::end() );
+     spawn_item(7, 11, "visions_solitude", 0);
      add_spawn(mon_zombie_brute, 1, 6, 13);
      for (int i = 0; i <= 23; i++) {
        for (int j = 0; j <= 23; j++) {
@@ -9354,6 +9355,109 @@ case ot_s_garage_north:
 	}
 }
 break;
+
+
+ case ot_cabin_strange: {
+// Init to grass & dirt;
+  fill_background(this, &grass_or_dirt);
+  mapf::formatted_set_terrain(this, 0, 0,
+   "                        \n\
+^  FfffffffffffGfffffF  \n\
+   F                 F  \n\
+   F              ^  F  \n\
+  ^F  |-w---|        F  \n\
+   F  |cSecu|sssss   F  \n\
+  |-w-|O....=sssss|---| \n\
+  |H.T|c...u|-w-w-|>..w \n\
+  |H..+....u|d....|-|-| \n\
+  |..S|.....+.....+.|r| \n\
+  |-+-|.....|...bb|r|.| \n\
+  |.........|---|-|-|+| \n\
+  w...hh....aaaa|.d...| \n\
+  |..htth.......|.....w \n\
+  w..htth.......D..bb.w \n\
+  w...hh.......o|..bb.| \n\
+  |o...........A|-----| \n\
+  w.............|d.bb.| \n\
+  |.............+..bb.w \n\
+  |-+|-w-==-w-|-|.....| \n\
+  |r.|ssssssss|r+.....| \n\
+  |--|ssssssss|-|--w--| \n\
+     ssCssssCss         \n\
+  ^                 ^   \n",
+   mapf::basic_bind("% ^ f F G H u a A b C . - | t + = D w T S e o h c d r s O >",
+         t_shrub, t_tree, t_fence_h, t_fence_v, t_fencegate_c, t_bathtub, t_cupboard, t_sofa, t_armchair, t_bed, t_column, t_floor, t_wall_h,
+         t_wall_v,  t_table, t_door_c, t_door_boarded, t_door_locked_interior, t_window_boarded, t_toilet, t_sink, t_fridge, t_bookcase,
+         t_chair, t_counter, t_dresser, t_rack, t_sidewalk, t_oven, t_stairs_down),
+   mapf::end() );
+     for (int i = 0; i <= 23; i++) {
+       for (int j = 0; j <= 23; j++) {
+            if (this->ter(i,j) == t_fridge)
+                place_items(mi_fridgesnacks,  30, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_cupboard)
+                place_items(mi_cannedfood,  30, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_rack || this->ter(i,j) == t_dresser)
+                place_items(mi_dresser,  40, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_bookcase)
+                place_items(mi_novels,  40, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_floor)
+                place_items(mi_subway,  10, i, j, i, j, true, 0);
+       }
+     }
+ } break;
+
+  case ot_cabin_strange_b: {
+// Init to grass & dirt;
+  fill_background(this, &grass_or_dirt);
+  mapf::formatted_set_terrain(this, 0, 0,
+   "########################\n\
+################...h...#\n\
+########c.cc####.httth.#\n\
+###T..##c....+...ht.th.#\n\
+###...G....c####.......#\n\
+###bb.##....############\n\
+##########D###|---|---|#\n\
+##########.###|cdc|<..|#\n\
+##.hhh.##...##|.h.|-D-|#\n\
+#.......#.C.##|-+-|..h##\n\
+#.hh.hh.D...##c......c##\n\
+#.......#.C.##ccC..Ccc##\n\
+#.hh.hh.#...##cc.....r##\n\
+#.......#.C.##ccC..C.r##\n\
+#.hh.hh.#...##tt..ch.r##\n\
+#.......#.C.##ttCccC..##\n\
+#.......#............A##\n\
+#...t...#.C..C.cC..C..##\n\
+##.....##..h..ccccbbo.##\n\
+###+#+##################\n\
+##.....#################\n\
+##.....#################\n\
+##.....#################\n\
+########################\n",
+   mapf::basic_bind("G A b C . - | t + = D o h c d r < # T",
+         t_door_bar_locked, t_armchair, t_bed, t_column, t_dirtfloor, t_wall_h,
+         t_wall_v,  t_table, t_door_c, t_door_boarded, t_door_locked_interior, t_bookcase,
+         t_chair, t_crate_o, t_desk, t_rack, t_stairs_up, t_rock, t_toilet),
+   mapf::end() );
+   spawn_item(2, 17, "brazier", 0);
+   spawn_item(6, 17, "brazier", 0);
+   spawn_item(4, 17, "etched_skull", 0);
+     for (int i = 0; i <= 23; i++) {
+       for (int j = 0; j <= 23; j++) {
+            if (this->ter(i,j) == t_crate_c)
+                place_items(mi_dresser,  20, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_cupboard || this->ter(i,j) == t_rack)
+                place_items(mi_cannedfood,  30, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_bookcase)
+                place_items(mi_novels,  40, i, j, i, j, true, 0);
+            if (this->ter(i,j) == t_dirtfloor)
+                place_items(mi_subway,  10, i, j, i, j, true, 0);
+       }
+     }
+    add_spawn(mon_dementia, rng(3, 6), 4, 12);
+    add_spawn(mon_dementia, rng(1, 4), 19, 2);
+    add_spawn(mon_blood_sacrifice, 1, 4, 21);
+ } break;
 
  case ot_farm:{
     if (!one_in(10)){
@@ -12406,7 +12510,8 @@ void map::add_spawn(monster *mon)
            mon->faction_id, mon->mission_id, spawnname);
 }
 
-vehicle *map::add_vehicle(game *g, vhtype_id type, int x, int y, int dir, int veh_fuel, int veh_status)
+vehicle *map::add_vehicle(game *g, vhtype_id type, const int x, const int y, const int dir,
+                          const int veh_fuel, const int veh_status)
 {
  if (x < 0 || x >= SEEX * my_MAPSIZE || y < 0 || y >= SEEY * my_MAPSIZE) {
   debugmsg("Bad add_vehicle t=%d d=%d x=%d y=%d", type, dir, x, y);
@@ -12414,15 +12519,13 @@ vehicle *map::add_vehicle(game *g, vhtype_id type, int x, int y, int dir, int ve
  }
 // debugmsg("add_vehicle t=%d d=%d x=%d y=%d", type, dir, x, y);
 
- int smx = x / SEEX;
- int smy = y / SEEY;
- int nonant = smx + smy * my_MAPSIZE;
- x %= SEEX;
- y %= SEEY;
+ const int smx = x / SEEX;
+ const int smy = y / SEEY;
+ const int nonant = smx + smy * my_MAPSIZE;
 // debugmsg("n=%d x=%d y=%d MAPSIZE=%d ^2=%d", nonant, x, y, MAPSIZE, MAPSIZE*MAPSIZE);
  vehicle * veh = new vehicle(g, type, veh_fuel, veh_status);
- veh->posx = x;
- veh->posy = y;
+ veh->posx = x % SEEX;
+ veh->posy = y % SEEY;
  veh->smx = smx;
  veh->smy = smy;
  veh->face.init(dir);
@@ -12434,8 +12537,8 @@ vehicle *map::add_vehicle(game *g, vhtype_id type, int x, int y, int dir, int ve
  for( std::vector<int>::const_iterator part = veh->external_parts.begin();
       part != veh->external_parts.end(); part++ )
  {
-     int px = veh->parts[*part].precalc_dx[0];
-     int py = veh->parts[*part].precalc_dy[0];
+     const int px = x + veh->parts[*part].precalc_dx[0];
+     const int py = y + veh->parts[*part].precalc_dy[0];
 
      // Don't spawn on top of another vehicle or other obstacle.
      if( veh_at(px, py) != NULL || terlist[ter(px, py)].movecost != 2 )

@@ -748,6 +748,7 @@ bool overmap::generate_sub(int const z)
  std::vector<point> bunker_points;
  std::vector<point> shelter_points;
  std::vector<point> lmoe_points;
+ std::vector<point> cabin_strange_points;
  std::vector<point> triffid_points;
  std::vector<point> temple_points;
  std::vector<point> office_entrance_points;
@@ -829,6 +830,9 @@ bool overmap::generate_sub(int const z)
 
    else if (ter(i, j, z + 1) == ot_lmoe)
     lmoe_points.push_back( point(i, j) );
+    
+   else if (ter(i, j, z + 1) == ot_cabin_strange)
+    cabin_strange_points.push_back( point(i, j) );
 
    else if (ter(i, j, z + 1) == ot_mine_entrance)
     shaft_points.push_back( point(i, j) );
@@ -935,6 +939,9 @@ bool overmap::generate_sub(int const z)
 
  for (int i = 0; i < lmoe_points.size(); i++)
   ter(lmoe_points[i].x, lmoe_points[i].y, z) = ot_lmoe_under;
+  
+ for (int i = 0; i < cabin_strange_points.size(); i++)
+  ter(cabin_strange_points[i].x, cabin_strange_points[i].y, z) = ot_cabin_strange_b;
 
  for (int i = 0; i < triffid_points.size(); i++) {
   if (z == -1) {
@@ -1125,7 +1132,7 @@ int overmap::dist_from_city(point p)
 }
 
 void overmap::draw(WINDOW *w, game *g, int z, int &cursx, int &cursy,
-                   int &origx, int &origy, char &ch, bool blink,
+                   int &origx, int &origy, signed char &ch, bool blink,
                    overmap &hori, overmap &vert, overmap &diag)
 {
  bool note_here = false, npc_here = false;
@@ -1361,7 +1368,7 @@ point overmap::draw_overmap(game *g, int zlevel)
  int cursx = (g->levx + int(MAPSIZE / 2)) / 2,
      cursy = (g->levy + int(MAPSIZE / 2)) / 2;
  int origx = cursx, origy = cursy, origz = zlevel;
- char ch = 0;
+ signed char ch = 0;
  point ret(-1, -1);
  overmap hori, vert, diag; // Adjacent maps
 

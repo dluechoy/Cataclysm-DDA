@@ -249,11 +249,13 @@ void vehicle::init_state(game* g, int init_veh_fuel, int init_veh_status)
 std::string vehicle::use_controls()
 {
  std::vector<vehicle_controls> options_choice;
- std::vector<std::string> options_message;
-
+ std::vector<uimenu_entry> options_message;
  // Alway have this option
+ int curent=0;
+ int letgoent=0;
  options_choice.push_back(toggle_cruise_control);
- options_message.push_back((cruise_on) ? "Disable cruise control" : "Enable cruise control");
+ options_message.push_back(uimenu_entry((cruise_on) ? "Disable cruise control" : "Enable cruise control", 'c'));
+ curent++;
 
  bool has_lights = false;
  bool has_turrets = false;
@@ -267,13 +269,15 @@ std::string vehicle::use_controls()
  // Lights if they are there - Note you can turn them on even when damaged, they just don't work
  if (has_lights) {
   options_choice.push_back(toggle_lights);
-  options_message.push_back((lights_on) ? "Turn off headlights" : "Turn on headlights");
+  options_message.push_back(uimenu_entry((lights_on) ? "Turn off headlights" : "Turn on headlights", 'h'));
+  curent++;
  }
 
  // Turrents: off or burst mode
  if (has_turrets) {
   options_choice.push_back(toggle_turrets);
-  options_message.push_back((0 == turret_mode) ? "Switch turrets to burst mode" : "Disable turrets");
+  options_message.push_back(uimenu_entry((0 == turret_mode) ? "Switch turrets to burst mode" : "Disable turrets", 't'));
+  curent++;
  }
 
  // Exit vehicle, if we are in it.
@@ -281,16 +285,23 @@ std::string vehicle::use_controls()
  if (g->u.controlling_vehicle &&
      g->m.veh_at(g->u.posx, g->u.posy, vpart) == this) {
   options_choice.push_back(release_control);
-  options_message.push_back("Let go of controls");
+  options_message.push_back(uimenu_entry("Let go of controls", 'l'));
+  letgoent=curent;
  }
 
  options_choice.push_back(control_cancel);
- options_message.push_back("Do nothing");
+ options_message.push_back(uimenu_entry("Do nothing", ' '));
 
- int select = menu_vec(true, "Vehicle controls", options_message);
+ uimenu selectmenu;
+ selectmenu.text="Vehicle controls";
+ selectmenu.entries=options_message;
+ selectmenu.selected=letgoent;
+ selectmenu.query();
+ int select=selectmenu.ret;
+// int select = menu_vec(true, "Vehicle controls", options_message);
 
  std::string message;
- switch(options_choice[select - 1]) {
+ switch(options_choice[select]) {
   case toggle_cruise_control:
    cruise_on = !cruise_on;
    message = (cruise_on) ? "Cruise control turned on" : "Cruise control turned off";
@@ -1648,9 +1659,59 @@ void vehicle::handle_trap (int x, int y, int part)
         g->explosion(x, y, expl, shrap, false);
 }
 
+// total volume of all the things
+int vehicle::stored_volume(int part) {
+   if (!part_flag(part, vpf_cargo))
+        return 0;
+   int cur_volume = 0;
+   for (int i = 0; i < parts[part].items.size(); i++) {
+       cur_volume += parts[part].items[i].volume();
+   }
+   return cur_volume;
+}
+// stub, pending per vpart limits
+int vehicle::max_volume(int part) {
+   return MAX_VOLUME_IN_VEHICLE_STORAGE;
+}
+
+// free space
+int vehicle::free_volume(int part) {
+   const int maxvolume = this->max_volume(part);
+   return ( maxvolume - stored_volume(part) );
+}
+
+// returns true if full, modified by arguments:
+// (none):                            size >= max || volume >= max
+// (addvolume >= 0):                  size+1 > max || volume + addvolume > max
+// (addvolume >= 0, addnumber >= 0):  size + addnumber > max || volume + addvolume > max
+bool vehicle::is_full(const int part, const int addvolume, const int addnumber) {
+   const int maxitems = MAX_ITEM_IN_VEHICLE_STORAGE;
+   const int maxvolume = this->max_volume(part);
+
+   if ( addvolume == -1 ) {
+       if ( parts[part].items.size() < maxitems ) return true;
+       int cur_volume=stored_volume(part);
+       return (cur_volume >= maxvolume ? true : false );
+   } else {
+       if ( parts[part].items.size() + ( addnumber == -1 ? 1 : addnumber ) > maxitems ) return true;
+       int cur_volume=stored_volume(part);
+       return ( cur_volume + addvolume > maxvolume ? true : false );
+   }
+
+}
+
 bool vehicle::add_item (int part, item itm)
 {
-    if (!part_flag(part, vpf_cargo) || parts[part].items.size() >= 64)
+    const int max_storage = MAX_ITEM_IN_VEHICLE_STORAGE; // (game.h)
+    const int maxvolume = this->max_volume(part);         // (game.h => vehicle::max_volume(part) ) in theory this could differ per vpart ( seat vs trunk )
+
+    // const int max_weight = ?! // TODO: weight limit, calc per vpart & vehicle stats, not a hard user limit.
+    // add creaking sounds and damage to overloaded vpart, outright break it past a certian point, or when hitting bumps etc
+
+    if (!part_flag(part, vpf_cargo))
+        return false;
+    
+    if (parts[part].items.size() >= max_storage)
         return false;
     it_ammo *ammo = dynamic_cast<it_ammo*> (itm.type);
     if (part_flag(part, vpf_turret))
@@ -1658,16 +1719,21 @@ bool vehicle::add_item (int part, item itm)
                  ammo->type == AT_GAS ||
                  ammo->type == AT_PLASMA))
             return false;
-
-    if(itm.charges  != -1 && (itm.is_food() || itm.is_ammo())) {
+    int cur_volume = 0;
+    int add_volume = itm.volume();
+    bool tryaddcharges=(itm.charges  != -1 && (itm.is_food() || itm.is_ammo()));
+    // iterate anyway since we need a volume total
       for (int i = 0; i < parts[part].items.size(); i++) {
-        if(parts[part].items[i].type->id == itm.type->id ) {
+        cur_volume += parts[part].items[i].volume();
+        if( tryaddcharges && parts[part].items[i].type->id == itm.type->id ) {
           parts[part].items[i].charges+=itm.charges;
           return true;
         }
       }
+    
+    if ( cur_volume + add_volume > maxvolume ) {
+      return false;
     }
-
     parts[part].items.push_back (itm);
     return true;
 }

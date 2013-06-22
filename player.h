@@ -73,9 +73,10 @@ public:
  int  swim_speed();	// Our speed when swimming
 
  bool has_trait(int flag) const;
- bool has_mutation(int flag) const;
+ bool has_base_trait(int flag) const;
  void toggle_trait(int flag);
-
+ void toggle_mutation(int flag);
+ 
  bool in_climate_control(game *g);
 
  bool has_bionic(bionic_id b) const;
@@ -146,7 +147,7 @@ public:
  int  dodge_roll(game *g);// For comparison to hit_roll()
 
 // ranged.cpp
- int throw_range(char invlet); // Range of throwing item; -1:ERR 0:Can't throw
+ int throw_range(signed char invlet); // Range of throwing item; -1:ERR 0:Can't throw
  int ranged_dex_mod	(bool real_life = true);
  int ranged_per_mod	(bool real_life = true);
  int throw_dex_mod	(bool real_life = true);
@@ -174,6 +175,7 @@ public:
  void knock_back_from(game *g, int x, int y);
 
  int hp_percentage();	// % of HP remaining, overall
+ void recalc_hp(); // Change HP after a change to max strength
 
  void get_sick(game *g);	// Process diseases
 // infect() gives us a chance to save (mostly from armor)
@@ -198,12 +200,12 @@ public:
  void vomit(game *g);
 
  char lookup_item(char let);
- bool eat(game *g, char invlet);	// Eat item; returns false on fail
- virtual bool wield(game *g, char invlet);// Wield item; returns false on fail
+ bool eat(game *g, signed char invlet);	// Eat item; returns false on fail
+ virtual bool wield(game *g, signed char invlet, bool autodrop = false);// Wield item; returns false on fail
  void pick_style(game *g); // Pick a style
  bool wear(game *g, char let);	// Wear item; returns false on fail
  bool wear_item(game *g, item *to_wear);
- bool takeoff(game *g, char let);// Take off item; returns false on fail
+ bool takeoff(game *g, char let, bool autodrop = false);// Take off item; returns false on fail
  void sort_armor(game *g);      // re-order armor layering
  void use(game *g, char let);	// Use a tool
  void use_wielded(game *g);
