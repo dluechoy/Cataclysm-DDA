@@ -42,15 +42,15 @@ struct cat_vec2d {
   cat_vec2d(const cat_vec2d &v) : magnitude (v.magnitude), angle (v.angle) {}
   ~cat_vec2d(){}
 
-//bool operator<(cat_vec2d other) const
-//bool operator<=(cat_vec2d other) const
+bool operator<(cat_vec2d other) const
+bool operator<=(cat_vec2d other) const
 //bool operator!=(cat_vec2d other) const
 //bool operator==(cat_vec2d other) const
 //bool operator>=(cat_vec2d other) const
 //bool operator>(cat_vec2d other) const
 
 // ° because ∠ is not widely supported
-//bool operator°<(cat_vec2d other) const
+bool operator°<(cat_vec2d other) const
 //bool operator°<=(cat_vec2d other) const
 //bool operator°!=(cat_vec2d other) const
 //bool operator°==(cat_vec2d other) const

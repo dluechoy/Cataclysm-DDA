@@ -174,6 +174,13 @@ std::string direction_name_short(direction dir)
  return "Bug. (line.cpp:direction_name_short)";
 }
 
+bool cat_vec2d::operator<(cat_vec2d &rhs) const {
+  return cat_vec2d.magnitude > rhs.magnitude;
+}
+//I wonder if this will cause problems...
+bool operator°<(cat_vec2d other) const{
+  return cat_vec2d.angle > rhs.angle;
+}
 
 float rl_vec2d::norm(){
  if (fabs(x) > fabs(y))
